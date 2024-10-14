@@ -1,7 +1,6 @@
 #include <math.h>   // Permet d'effectuer des calculs
 #include <stdlib.h> // Permet l'allocation dynamic de mémoire
 #include <stdio.h>
-#include <stdbool.h> // Permet d'utiliser un booléen. Pas vraiment obligatoire mais plus compréhensible
 
 typedef struct{     // Définit une structure "Tableau" qui permet d'obtenir à la fois les données du tableau mais aussi sa taille. (en fonction du nb. de racine, la taille change)
     int taille;
@@ -58,7 +57,6 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, double a
     int compteurIntervalle = 0;
     int compteurPas = 0;
     int i;
-    bool ordonneeTamponZero;
 
     while ((compteurIntervalle<6)&&(compteurPas <3)) //A l'issue de trois changements, compteurIntervalle = 6, donc on s'arrête de chercher d'autres racines. Un fois qu'on a testé la 3e valeur de pas (pas[2]), la boucle incrémente de 1 le compteur et on doit s'arrêter car pas[3] n'existe pas.
     {
@@ -89,7 +87,6 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, double a
             tab->donnees[compteurIntervalle] = abscisse + pas[compteurPas]; /* En réalité si ordonneeTampon vaut 0 c'est qu'on a trouvé une racine. Pour l'exercice je renvoie un intervalle 
                                                                     qui la contient en ajoutant le pas mais on pourrait directement la renvoyer en tant que telle. */
             compteurIntervalle = compteurIntervalle +1;
-            ordonneeTamponZero = true;
         }
         else if (ordonneeTampon*ordonnee<0 && tab->donnees[compteurIntervalle-1]!=abscisse && tab->donnees[compteurIntervalle-1]!=abscisse-pas[compteurPas]) {
             printf("ordonneeTampon*ordonnee<0 --> Abscisse : %f, ordonnee : %f, ordonneeTampon : %f \n",abscisse,ordonnee,ordonneeTampon);
