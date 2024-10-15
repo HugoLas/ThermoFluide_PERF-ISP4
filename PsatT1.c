@@ -242,6 +242,20 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
         tabResult->donnees[tabResult->taille]=x1;
         tabResult->taille++;
     }
+    if (tabIntervalles->taille == 2 && tabIntervalles->donnees[0]!=-1) // -1 correspond au code d'erreur renvoyé pour 0 racine. Ici on se place dans le cas d'une racine unique.
+    {
+    double *NouvTab = (double*)realloc(tabResult->donnees,1 * sizeof(double)); 
+    if (NouvTab != NULL) 
+    {
+        tabResult->donnees = NouvTab; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
+        tabResult->taille = 1;
+        printf("Reallocation de la mémoire\n");
+    }
+    else{
+        printf("Erreur de réallocation mémoire fonction NewtonRaphton avec une seule racine.");
+    }
+    }
+    else{
     mini = valeurMin(tabResult);
     maxi = valeurMax(tabResult);
     tabResult->donnees[0] = mini;
@@ -255,6 +269,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
     }
     else{
         printf("Erreur de réallocation mémoire fonction NewtonRaphton");
+    }
     }
 }
 
