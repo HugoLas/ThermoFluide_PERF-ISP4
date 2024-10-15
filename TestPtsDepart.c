@@ -14,11 +14,11 @@ void instancierTableau(Tableau *tab, int taille);
 int main(){
     printf("J'entre dans main \n");
     int boucle;
-    double abg[4]; // prendre 1, -6, 11, -6 pour trois racines = 1, 2, 3; prendre 1, -5, 8, -4 pour deux racines = 1, 2 (penser à itérer le print du tableau jusqu'à 4 et pas 6); prendre 1 -3 3 -1 pour une racine = 1 (itérer jusqu'à 2)
-    abg[0] = 1;
-    abg[1] = -6;
-    abg[2] = 11;
-    abg[3] = -6; //remplacer par -5.9 pour des racines pas 'rondes' <=> qui tombent pas pile sur une valeur de pas
+    double abg[4]; // prendre 1, -6, 11, -6 pour trois racines = 1, 2, 3; prendre 1, -5, 8, -4 pour deux racines = 1, 2; prendre 1 -3 3 -1 pour une racine = 1; prendre 1, -5, 8, -50 pour 0 racine entre x=0 et x=4
+//    abg[0] = 1;
+//    abg[1] = -6;
+//    abg[2] = 11;
+//    abg[3] = -6; //remplacer par -5.9 pour des racines pas 'rondes' <=> qui tombent pas pile sur une valeur de pas
 // ou
 //    abg[0] = 1;
 //    abg[1] = -5;
@@ -29,6 +29,12 @@ int main(){
 //    abg[1] = -3;
 //    abg[2] = 3;
 //    abg[3] = -1;
+// ou
+    abg[0] = 1;
+    abg[1] = -5;
+    abg[2] = 8;
+    abg[3] = -50;
+
 
 
     printf("J'ai peuplé abg \n");
@@ -101,7 +107,7 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, double a
         compteurPas = compteurPas + 1;
     }
     
-    if (compteurIntervalle != 6) //On part de 0, si on trouve un changement on incrémente 2 fois de 1. Donc compteurIntervalle = 2 avec les cases 0 et 1 remplies. Même raisonnement jusqu'à 6.
+    if (compteurIntervalle != 6 && compteurIntervalle > 0) //On part de 0, si on trouve un changement on incrémente 2 fois de 1. Donc compteurIntervalle = 2 avec les cases 0 et 1 remplies. Même raisonnement jusqu'à 6.
     {
         double *NouvTableauAbscisses = (double*)realloc(tab->donnees,compteurIntervalle * sizeof(double)); // Donc si on a pas trouvé 3 racines, on renvoie un tableau qui contient le bon nombre de racines seulement.
         if (NouvTableauAbscisses != NULL) 
@@ -113,7 +119,23 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, double a
         else{
             printf("Erreur de réallocation mémoire : tableau de 6 cases --> tableau de %d cases\n",compteurIntervalle);
         }
-    }       
+    }
+    else if (compteurIntervalle == 0) // Si pas de racine dans l'intervalle
+    {
+        double *NouvTableauAbscisses = (double*)realloc(tab->donnees,2 * sizeof(double)); // Donc si on a pas trouvé 3 racines, on renvoie un tableau qui contient le bon nombre de racines seulement.
+        if (NouvTableauAbscisses != NULL) 
+        {
+            tab->donnees = NouvTableauAbscisses; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
+            tab->taille = 2;
+            tab->donnees[0] = -1;
+            tab->donnees[1] = -1;
+            printf("PAS DE RACINE SUR INTERVALLE ABSCISSES -> Reallocation de la mémoire -> intervalle = [-1;-1] \n");
+        }
+        else{
+            printf("Erreur de réallocation mémoire : tableau de 6 cases --> tableau de %d cases\n",compteurIntervalle);
+        }
+    }
+    
 }
 
 double PR(double A, double B, double C, double D, double Z){
