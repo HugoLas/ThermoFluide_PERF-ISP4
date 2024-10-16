@@ -33,7 +33,6 @@ double acentric;
 double alpha;
 double A;
 double B;
-double Q;
 double ab[2]; // Contiendra les paramètres A et B pour Peng Robinson
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~ Déclarations des fonctions ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -46,11 +45,12 @@ double trouveAlpha(double acentric);
 double PR(double Z);
 double derivePR(double Z);
 double trouveQZB(double Z);
-double trouvePhi(double Z);
+double trouvePhi(double Z, double Q);
 double valeurMax(Tableau *tab);
 double valeurMin(Tableau *tab);
 void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup); // La fonction prend en entrée l'adresse du tableau sur lequel travailler, les bornes de la fonction, ses paramètres.
-void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles);
+void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero);
+double trouvePsat(double tolerance);
 void instancierTableau(Tableau *tab, int taille);
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~ Programme principal ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,6 +58,7 @@ void instancierTableau(Tableau *tab, int taille);
 /* C'est cette fonction qui est appelée lors de l'exécution du programme. */
 
 int main(){
+double Psaturation;
 printf("Valeur de T1 : \n");
 scanf("%lf", &T1); //%lf spécifie que l'on attend un double, & spécifie à quelle variable attribuer la valeur.
 printf("Valeur de Tc : \n");
@@ -73,6 +74,9 @@ scanf("%lf", &acentric);
 
 alpha = trouveAlpha(acentric);
 Tr = T1/Tc;
+Pr = trouvePsat(1);
+Psaturation = Pr*Pc;
+printf("Pression de vapeur saturante à T = %.2f K vaut %.4f bar.\n", T1, Psaturation);
 
 return 0;
 };  
@@ -204,14 +208,14 @@ double trouveQZB(double Z){
     return Q;
 }
 
-double trouvePhi(double Z){
+double trouvePhi(double Z, double Q){
     double phi = exp(Z-1-log(Z-B)-((A*sqrt(2)/(4*B))*log(Q))); 
     return phi;
 }
 
 void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero){
     int maxBoucle = 1000;
-    int i, compteurIntervalles;
+    int i;
     double x0, x1, dfx0, mini, maxi;
     
     if (tabIntervalles->donnees[0]==-1 && tabIntervalles->donnees[1]==-1)
@@ -221,7 +225,6 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
         return;
     }
     
-    compteurIntervalles = 0;
     tabResult->taille = 0;
     for (i = 0; i < tabIntervalles->taille; i=i+2)
     {   
@@ -311,4 +314,86 @@ double valeurMin(Tableau *tab){
         }
     }
     return valMin;
+}
+
+double trouvePsat(double tolerance){
+    double Preduit, QLiq, QVap, phiLiq, phiVap;
+    double pas[] = {0.1,0.01,0.001};
+    int iteration, maxIter, compteurPas;
+
+    compteurPas = 0;
+    Preduit = 0;
+
+    Tableau *TabBornesRacines = (Tableau*)malloc(sizeof(Tableau));
+    instancierTableau(TabBornesRacines,6);
+
+    Tableau *TabRacines = (Tableau*)malloc(sizeof(Tableau));
+    instancierTableau(TabRacines,3);
+
+    do
+    {
+        do
+        {
+            if (TabBornesRacines->taille != 6) // Si à l'issue de la dernière boucle on a redim le tableau, il faut le rétablir à 6 cases au cas où à la prochaine itération on ait 3 racines.
+            {
+                double *NouvTableauBornes = (double*)realloc(TabBornesRacines->donnees,6 * sizeof(double)); // Donc si on a pas trouvé 3 racines, on renvoie un tableau qui contient le bon nombre de racines seulement.
+                if (NouvTableauBornes != NULL) 
+                {
+                    TabBornesRacines->donnees = NouvTableauBornes; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
+                    TabBornesRacines->taille = 6;
+                    printf("Reallocation de la mémoire\n");
+                }
+                else{
+                    printf("Erreur de réallocation mémoire : Realloc du tableau des bornes des racines pour nouvelle tentative de pression reduite. \n");
+                    return -1; // Pression absurde pour signaler le problème et éviter un crash.
+                }
+            }
+            
+            if (TabRacines->taille != 3) // Si à l'issue de la dernière boucle on a redim le tableau, il faut le rétablir à 3 cases au cas où à la prochaine itération on ait 3 racines.
+            {
+                double *NouvTableauRacines = (double*)realloc(TabRacines->donnees,3 * sizeof(double)); // Donc si on a pas trouvé 3 racines, on renvoie un tableau qui contient le bon nombre de racines seulement.
+                if (NouvTableauRacines != NULL) 
+                {
+                    TabRacines->donnees = NouvTableauRacines; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
+                    TabRacines->taille = 3;
+                    printf("Reallocation de la mémoire\n");
+                }
+                else{
+                    printf("Erreur de réallocation mémoire : Realloc du tableau des racines pour nouvelle tentative de pression reduite. \n");
+                    return -1; // Pression absurde pour signaler le problème et éviter un crash.
+                }
+            }
+
+            trouveA(Preduit);
+            trouveB(Preduit);
+            PointsDepartNewton(TabBornesRacines,0.01,2);
+            NewtonRaphson(TabRacines,TabBornesRacines,0.00001);
+            QLiq = trouveQZB(TabRacines->donnees[0]);
+            QVap = trouveQZB(TabRacines->donnees[1]);
+            phiLiq = trouvePhi(TabRacines->donnees[0],QLiq);
+            phiVap = trouvePhi(TabRacines->donnees[1],QVap);
+            
+            if ((100*fabs(phiLiq-phiVap))/phiLiq < tolerance)
+            {
+                free(TabBornesRacines->donnees);
+                free(TabRacines->donnees);
+                free(TabBornesRacines);
+                free(TabRacines);
+                return Preduit;
+            }
+            else
+            {
+                Preduit = Preduit + pas[compteurPas];
+            }
+
+        } while (Preduit < 12); // la valeur 12 est arbitraire, cela semble très grand pour une pression reduite.
+        iteration = iteration + 1;
+        compteurPas = compteurPas + 1;
+    } while (compteurPas < 3 && iteration < maxIter);
+
+    free(TabBornesRacines->donnees);
+    free(TabRacines->donnees);
+    free(TabBornesRacines);
+    free(TabRacines);
+    return -1; //Si malgré toutes les itérations et pas différents on ne répond pas au critère de tolérance, alors on renvoie Pr = -1.
 }
