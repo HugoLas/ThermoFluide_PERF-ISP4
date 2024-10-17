@@ -59,35 +59,86 @@ void instancierTableau(Tableau *tab, int taille);
 
 int main(){
 double Psaturation;
-printf("Valeur de T1 : \n");
-//scanf("%lf", &T1); //%lf spécifie que l'on attend un double, & spécifie à quelle variable attribuer la valeur.
+int choixMenu;
+
+printf("Bienvenue dans ProSpen -2, les valeurs par défaut sont : \n");
+printf("\n");
+
 T1 = 173;
-printf("T1 = %f",T1);
-printf("Valeur de Tc : \n");
-//scanf("%lf", &Tc);
 Tc = 305.4;
-printf("Valeur de Pc : \n");
-//scanf("%lf", &Pc);
 Pc = 48.8;
-printf("Valeur de Omega_A : \n");
-//scanf("%lf", &Omega_A);
 Omega_A = 0.457236;
-printf("Valeur de Omega_B : \n");
-//scanf("%lf", &Omega_B);
 Omega_B = 0.077796;
-printf("Valeur du facteur acentric w : \n");
-//scanf("%lf", &acentric);
 acentric = 0.099;
 
-alpha = trouveAlpha(acentric);
-printf("alpha = %.5f \n", alpha);
-printf("OOOH");
+printf("(1) T1 = %.3f K \n", T1);
+
+printf("(2) Tc = %.3f K \n", Tc);
+
+printf("(3) Pc = %.3f bar \n", Pc);
+
+printf("(4) Facteur acentric \"w\" = %.6f \n", acentric);
+
+printf("(5) Omega_A = %.6f \n", Omega_A);
+
+printf("(6) Omega_B = %.6f \n", Omega_B);
+
+printf("\n");
+
+printf("Pour changer une de ces valeurs, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
+printf("--> ");
+
+scanf("%d", &choixMenu); // %d est le code qui indique que l'on souhaite un entier.
+while (choixMenu != 0)
+{
+    switch(choixMenu) {
+        case 1:
+            printf("T1 = " );
+            scanf("%lf", &T1); //%lf spécifie que l'on attend un double, & spécifie à quelle variable attribuer la valeur.
+            printf("\n");
+            break;
+        case 2:
+            printf("Tc = " );
+            scanf("%lf", &Tc);
+            printf("\n");
+            break;
+        case 3:
+            printf("Pc = " );
+            scanf("%lf", &Pc);
+            printf("\n");
+            break;
+        case 4:
+            printf("facteur acentric = " );
+            scanf("%lf", &acentric);
+            printf("\n");
+            break;
+        case 5:
+            printf("Omega_A = " );
+            scanf("%lf", &Omega_A);
+            printf("\n");
+            break;
+        case 6:
+            printf("Omega_B = " );
+            scanf("%lf", &Omega_B);
+            printf("\n");
+            break;
+        default:
+            printf("Numéro de valeur non reconnue. \n" );
+    }
+    printf("Pour changer une autre valeur, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
+    printf("--> ");
+    scanf("%d", &choixMenu);
+}
+
 
 Tr = T1/Tc;
-printf("Tr = %.5f \n", Tr);
+//printf("Tr = %.5f \n", Tr);
+
+alpha = trouveAlpha(acentric);
+//printf("alpha = %.5f \n", alpha);
 
 Pr = trouvePsat(1);
-printf("Pr = %.5f \n", Pr);
+//printf("Pr = %.5f \n", Pr);
 Psaturation = Pr*Pc;
 printf("Pression de vapeur saturante à T = %.2f K vaut %.4f bar.\n", T1, Psaturation);
 
@@ -114,8 +165,14 @@ double trouveB(double Pr){
 }
 
 double trouveAlpha(double acentric){
-    double m = 0.37464+(1.54226*acentric)-(0.26992*acentric*acentric);
-    double alpha = (1+m*(1-sqrt(Tr)))*(1+m*(1-sqrt(Tr)));
+    double m;
+    double racineAlpha;
+    double alpha;
+    m = 0.37464+(1.54226*acentric)-(0.26992*acentric*acentric);
+    racineAlpha = 1+m*(1-sqrt(Tr));
+    alpha = racineAlpha*racineAlpha;
+    //printf("m = %.4f \n",m);
+    //printf("alpha = %.4f \n",alpha);
     return alpha;
 }
 
@@ -341,7 +398,7 @@ double trouvePsat(double tolerance){
     int compteurPas;
 
     compteurPas = 0;
-    Preduit = 0.0106;
+    Preduit = 0.000001;
 
     Tableau *TabBornesRacines = (Tableau*)malloc(sizeof(Tableau));
     instancierTableau(TabBornesRacines,6);
@@ -385,25 +442,25 @@ double trouvePsat(double tolerance){
             }
 
             A = trouveA(Preduit);
-            printf("A = %.5f \n", A);
+            //printf("A = %.5f \n", A);
             B = trouveB(Preduit);
-            printf("B = %.5f \n", B);
+            //printf("B = %.5f \n", B);
             PointsDepartNewton(TabBornesRacines,0.0,2);
             NewtonRaphson(TabRacines,TabBornesRacines,0.00001);
             if (TabRacines->taille != 1 && TabRacines->donnees[0] != -1000)
             {
-                printf("abscisse 1 : %f \n",TabBornesRacines->donnees[0]);
-                printf("abscisse 2 : %f \n",TabBornesRacines->donnees[2]);
-                printf("Racine 1 : %f \n",TabRacines->donnees[0]);
-                printf("Racine 2 : %f \n",TabRacines->donnees[1]);
+                //printf("abscisse 1 : %f \n",TabBornesRacines->donnees[0]);
+                //printf("abscisse 2 : %f \n",TabBornesRacines->donnees[2]);
+                //printf("Racine 1 : %f \n",TabRacines->donnees[0]);
+                //printf("Racine 2 : %f \n",TabRacines->donnees[1]);
                 QLiq = trouveQZB(TabRacines->donnees[0]);
-                printf("QLiq = %.5f \n", QLiq);
+                //printf("QLiq = %.5f \n", QLiq);
                 QVap = trouveQZB(TabRacines->donnees[1]);
-                printf("QVap = %.5f \n", QVap);
+                //printf("QVap = %.5f \n", QVap);
                 phiLiq = trouvePhi(TabRacines->donnees[0],QLiq);
-                printf("phiLiq = %.5f \n", phiLiq);
+                //printf("phiLiq = %.5f \n", phiLiq);
                 phiVap = trouvePhi(TabRacines->donnees[1],QVap);
-                printf("phiVap = %.5f \n", phiVap);
+                //printf("phiVap = %.5f \n", phiVap);
 
                 if ((100*fabs(phiLiq-phiVap))/phiLiq < tolerance)
                 {
@@ -423,7 +480,7 @@ double trouvePsat(double tolerance){
                 Preduit = Preduit + pas[compteurPas];
             }
             
-        } while (Preduit < 12); // la valeur 12 est arbitraire, cela semble très grand pour une pression reduite.
+        } while (Preduit < 3); // la valeur 3 est arbitraire, cela semble très grand pour une pression reduite + le programme est limité à Tr=1 pour lequel Pr vaut environ 1 aussi.
         compteurPas = compteurPas + 1;
     } while (compteurPas < 3);
 
