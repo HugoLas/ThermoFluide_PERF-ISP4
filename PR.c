@@ -1,129 +1,79 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~ Appel des librairies ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/* Ces librairies donnent accès à des fonctions déjà programmées par des gens talentueux
-et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) */
+#include "PR.h"
 
-#include <math.h>   // Permet d'effectuer des calculs
-#include <stdlib.h> // Permet l'allocation dynamic de mémoire
-#include <stdio.h>
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~ Déclaration des structures ~~~~~~~~~~~~~~~~~~~~~~~~~
+//~~~~~~~~~~~~~~~~~~~~~~~~~ Définition des fonctions déclarées dans le header file "PR.h" ~~~~~~~~~~~~~~~~~~~~~~~~~
 
-/*Les structures sont des objets qui sont constitués d'attributs, par exemple on peut avoir une structure "personne" avec pour attributs un entier âge, et un entier taille.*/
+/* Ici on donne le contenu des fonctions dont on aura besoin. Ces fonctions peuvent s'appeler entre elles. */
 
-typedef struct{     // Définit une structure "Tableau" qui permet d'obtenir à la fois les données du tableau mais aussi sa taille. (en fonction du nb. de racine, la taille change)
-    int taille;
-    double *donnees;
-} Tableau;
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~ Déclaration des variables globales ~~~~~~~~~~~~~~~~~~~~~~~~~
+Tableau* trouveZ(varPR* globales){ // Envisager de faire plutot une void qui manipule des valeurs dans globales
 
-/* Ces variables appartiennent à l'espace de travail global. Elles existent durant la durée de vie du programme.
-Par opposition, les variables locales (celles déclarées dans les fonctions) ne vivent que pendant l'execution de la fonction.
-Toute sous fonction peut manipuler les variables globales. */
+globales->Tr = globales->T1/globales->Tc;
+//printf("globales->Tr = %.5f \n", globales->Tr);
 
-double T1;
-double Tc;
-double Pc;
-double Omega_A; 
-double Omega_B;
-double Tr;
-double Pr;
-double acentric;
-double alpha;
-double A;
-double B;
-double ab[2]; // Contiendra les paramètres A et B pour Peng Robinson
+globales->Pr = globales->P1/globales->Pc;
+//printf("globales->Pc = %.5f \n", globales->Pc);
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~ Déclarations des fonctions ~~~~~~~~~~~~~~~~~~~~~~~~~
+globales->alpha = trouveAlpha(globales);
+//printf("globales->alpha = %.5f \n", globales->alpha);
 
-/* Déclare les fonctions avant main pour les signaler au compiler. */
+globales->A = trouveA(globales);
+//printf("globales->A = %.5f \n", globales->A);
 
-void menuValeursDefautPVap();
-double trouveA(double Pr);
-double trouveB(double Pr);
-double trouveAlpha(double acentric);
-double PR(double Z);
-double derivePR(double Z);
-double trouveQZB(double Z);
-double trouvePhi(double Z, double Q);
-double valeurMax(Tableau *tab);
-double valeurMin(Tableau *tab);
-void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup); // La fonction prend en entrée l'adresse du tableau sur lequel travailler, les bornes de la fonction, ses paramètres.
-void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero);
-double trouvePsat(double tolerance);
-void instancierTableau(Tableau *tab, int taille);
+globales->B = trouveB(globales);
+//printf("globales->B = %.5f \n", globales->B);
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~ Programme principal ~~~~~~~~~~~~~~~~~~~~~~~~~
+PointsDepartNewton(TabBornesRacines,0.0,2,globales);
+NewtonRaphson(TabRacines,TabBornesRacines,0.00001,globales);
 
-/* C'est cette fonction qui est appelée lors de l'exécution du programme. */
+if (TabRacines->taille != 1 && TabRacines->donnees[0] != -1000){
+    //pas de racine --> donner un code d'erreur à Zliq et Zgaz
 
-int main(){
-double Psaturation;
+}
 
-T1 = 173;
-Tc = 305.4;
-Pc = 48.8;
-Omega_A = 0.457236;
-Omega_B = 0.077796;
-acentric = 0.099;
-
-Tr = T1/Tc;
-//printf("Tr = %.5f \n", Tr);
-
-alpha = trouveAlpha(acentric);
-//printf("alpha = %.5f \n", alpha);
-
-Pr = trouvePsat(1);
-//printf("Pr = %.5f \n", Pr);
-Psaturation = Pr*Pc;
-printf("Pression de vapeur saturante à T = %.2f K vaut %.4f bar.\n", T1, Psaturation);
 
 return 0;
 };  
 
 
-//~~~~~~~~~~~~~~~~~~~~~~~~~ Définition des fonctions déclarées plus haut ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-/* Ici on donne le contenu des fonctions dont on aura besoin. Ces fonctions peuvent être appelées par le main
-tout commme elles peuvent s'appeler entre elles. */
-
-double trouveA(double Pr){
+double trouveA(varPR* globales){
     double A;
-    printf("Pr = %f \n", Pr);
-    A = Omega_A*alpha*(Pr/(Tr*Tr));
+    printf("globales->Pr = %f \n", globales->Pr);
+    A = globales->Omega_A*globales->alpha*(globales->Pr/(globales->Tr*globales->Tr));
     printf("A = %f \n", A);
     return A;
 }
 
-double trouveB(double Pr){
-    double B = Omega_B*(Pr/Tr);
+double trouveB(varPR* globales){
+    double B = globales->Omega_B*(globales->Pr/globales->Tr);
     return B;
 }
 
-double trouveAlpha(double acentric){
+double trouveAlpha(varPR* globales){
     double m;
     double racineAlpha;
     double alpha;
-    m = 0.37464+(1.54226*acentric)-(0.26992*acentric*acentric);
-    racineAlpha = 1+m*(1-sqrt(Tr));
+    m = 0.37464+(1.54226*globales->acentric)-(0.26992*globales->acentric*globales->acentric);
+    racineAlpha = 1+m*(1-sqrt(globales->Tr));
     alpha = racineAlpha*racineAlpha;
     //printf("m = %.4f \n",m);
     //printf("alpha = %.4f \n",alpha);
     return alpha;
 }
 
-double PR(double Z){
-    double Valeur = Z*Z*Z+(B-1)*Z*Z+(A-2*B-3*B*B)*Z-B*(A-B-B*B);
+double PR(double Z, varPR* globales){
+    double Valeur = Z*Z*Z+(globales->B-1)*Z*Z+(globales->A-2*globales->B-3*globales->B*globales->B)*Z-globales->B*(globales->A-globales->B-globales->B*globales->B);
     return Valeur;
 }
 
-double derivePR(double Z){
-    double derive = 3*Z*Z+2*(B-1)*Z+(A-2*B-3*B*B);
+double derivePR(double Z, varPR* globales){
+    double derive = 3*Z*Z+2*(globales->B-1)*Z+(globales->A-2*globales->B-3*globales->B*globales->B);
     return derive;
 }
 
-void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup){ // L'astérisque indique que la fonction renverra un pointeur. Ce pointeur est une adresse mémoire.
+void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, varPR* globales){ // L'astérisque indique que la fonction renverra un pointeur. Ce pointeur est une adresse mémoire.
     double pas[] = {0.1,0.01,0.001,0.0001}; // Remplacer le premier pas par un pas très grand (3.9 par ex. si l'intervalle des bornes est de 0 à 4) pour démontrer la fonction de sélection automatique du pas
     double abscisse, ordonnee, ordonneeTampon;
     int compteurIntervalle = 0;
@@ -137,7 +87,7 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup){ // L'as
                                     -> on aura saturé le tableau sans avoir trois intervalles sans intersection. Donc on reset la progression et on recommence à écrire
                                     au début du tableau quand on change de pas. */ 
         abscisse = borneInf;
-        ordonnee = PR(abscisse);    // Initialisation de l'ordonnee
+        ordonnee = PR(abscisse,globales);    // Initialisation de l'ordonnee
         printf("ordonnée = %f\n",ordonnee);
         if (ordonnee < 0.000000001 && ordonnee > -0.000000001){                      // Si jamais (quasi impossible) on tombe sur zero tout pile avec la premiere abscisse, on a déjà une première racine. 
             tab->donnees[compteurIntervalle] = abscisse - pas[compteurPas];   // Donc pour que la racine soit dans l'intervalle, on retire 1*pas ici..
@@ -148,7 +98,7 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup){ // L'as
         abscisse = abscisse + pas[compteurPas];
         while ((abscisse <= borneSup + pas[compteurPas]) && (compteurIntervalle < 5)) {  /* A l'issue du 2e changement, compteurIntervalle vaut 4, a l'issue du 3e changement, il vaut 6. (je crois que je pouvais mettre compteurIntervalle < 6 mais ca marche comme ca) 
                                                                             Abscisse + pas au cas où le dernier changement de signe soit sur la borneSup */
-        ordonneeTampon = PR(abscisse);
+        ordonneeTampon = PR(abscisse, globales);
         
         if (ordonneeTampon<0.000000001 && ordonneeTampon >-0.000000001 && tab->donnees[compteurIntervalle-1]!=abscisse && tab->donnees[compteurIntervalle-1]!=abscisse-pas[compteurPas]) /* Autrement dit, =0 (donc on a trouvé une racine) mais avec les doubles, un == pourrait poser problème. Normalement on a environ droit à 15 chiffres significatifs.
                                                                                                                                                                                             Je vérifie aussi qu'on vient pas de déclarer l'abscisse précédente (ou actuelle car c'est possible aussi) comme racine, sinon c'est juste qu'on la détecte en double à tort.*/
@@ -213,19 +163,19 @@ void instancierTableau(Tableau *tab, int taille){   // Cette fonction permet la 
     }
 }
 
-double trouveQZB(double Z){
+double trouveQZB(double Z, varPR* globales){
     double Q;
     //printf("Z = %f \n", Z);
-    Q = (Z+(1+sqrt(2))*B)/(Z+(1-sqrt(2))*B);
+    Q = (Z+(1+sqrt(2))*globales->B)/(Z+(1-sqrt(2))*globales->B);
     return Q;
 }
 
-double trouvePhi(double Z, double Q){
-    double phi = exp(Z-1-log(Z-B)-((A*sqrt(2)/(4*B))*log(Q))); 
+double trouvePhi(double Z, double Q, varPR* globales){
+    double phi = exp(Z-1-log(Z-globales->B)-((globales->A*sqrt(2)/(4*globales->B))*log(Q))); 
     return phi;
 }
 
-void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero){
+void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero, varPR* globales){
     int maxBoucle = 1000;
     int i;
     double x0, x1, dfx0, mini, maxi;
@@ -241,7 +191,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
     for (i = 0; i < tabIntervalles->taille; i=i+2)
     {   
         x0 = tabIntervalles->donnees[i];
-        dfx0 = derivePR(x0);
+        dfx0 = derivePR(x0,globales);
         if (dfx0 < 0.000000001 && dfx0 > -0.000000001)
         {
             printf("Tangente horizontale, x0 = x0 - 0.1");
@@ -249,9 +199,9 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
         }
         
         x1=0.1; // Simplement pour rentrer dans la boucle
-        while (fabs(PR(x1))>ecartZero && i<maxBoucle)
+        while (fabs(PR(x1, globales))>ecartZero && i<maxBoucle)
         {
-            x1 = x0 - (PR(x0)/derivePR(x0));
+            x1 = x0 - (PR(x0, globales)/derivePR(x0, globales));
             x0 = x1;
         }
         tabResult->donnees[tabResult->taille]=x1;
@@ -329,7 +279,7 @@ double valeurMin(Tableau *tab){
     return valMin;
 }
 
-double trouvePsat(double tolerance){
+double trouvePsat(double tolerance, varPR* globales){
     double Preduit, QLiq, QVap, phiLiq, phiVap;
     double pas[] = {0.0001,0.00001,0.000001};
     int compteurPas;
@@ -378,25 +328,25 @@ double trouvePsat(double tolerance){
                 }
             }
 
-            A = trouveA(Preduit);
-            //printf("A = %.5f \n", A);
-            B = trouveB(Preduit);
-            //printf("B = %.5f \n", B);
-            PointsDepartNewton(TabBornesRacines,0.0,2);
-            NewtonRaphson(TabRacines,TabBornesRacines,0.00001);
+            globales->A = trouveA(globales);
+            //printf("globales->A = %.5f \n", globales->A);
+            globales->B = trouveB(globales);
+            //printf("globales->B = %.5f \n", globales->B);
+            PointsDepartNewton(TabBornesRacines,0.0,2,globales);
+            NewtonRaphson(TabRacines,TabBornesRacines,0.00001,globales);
             if (TabRacines->taille != 1 && TabRacines->donnees[0] != -1000)
             {
                 //printf("abscisse 1 : %f \n",TabBornesRacines->donnees[0]);
                 //printf("abscisse 2 : %f \n",TabBornesRacines->donnees[2]);
                 //printf("Racine 1 : %f \n",TabRacines->donnees[0]);
                 //printf("Racine 2 : %f \n",TabRacines->donnees[1]);
-                QLiq = trouveQZB(TabRacines->donnees[0]);
+                QLiq = trouveQZB(TabRacines->donnees[0], globales);
                 //printf("QLiq = %.5f \n", QLiq);
-                QVap = trouveQZB(TabRacines->donnees[1]);
+                QVap = trouveQZB(TabRacines->donnees[1], globales);
                 //printf("QVap = %.5f \n", QVap);
-                phiLiq = trouvePhi(TabRacines->donnees[0],QLiq);
+                phiLiq = trouvePhi(TabRacines->donnees[0],QLiq, globales);
                 //printf("phiLiq = %.5f \n", phiLiq);
-                phiVap = trouvePhi(TabRacines->donnees[1],QVap);
+                phiVap = trouvePhi(TabRacines->donnees[1],QVap, globales);
                 //printf("phiVap = %.5f \n", phiVap);
 
                 if ((100*fabs(phiLiq-phiVap))/phiLiq < tolerance)
@@ -417,7 +367,7 @@ double trouvePsat(double tolerance){
                 Preduit = Preduit + pas[compteurPas];
             }
             
-        } while (Preduit < 3); // la valeur 3 est arbitraire, cela semble très grand pour une pression reduite + le programme est limité à Tr=1 pour lequel Pr vaut environ 1 aussi.
+        } while (Preduit < 3); // la valeur 3 est arbitraire, cela semble très grand pour une pression reduite + le programme est limité à globales->Tr=1 pour lequel Pr vaut environ 1 aussi.
         compteurPas = compteurPas + 1;
     } while (compteurPas < 3);
 
@@ -429,23 +379,23 @@ double trouvePsat(double tolerance){
     }
 
 
-void menuValeursDefautPVap(){
+void menuValeursDefautPVap(varPR* globales){
     int choixMenu;
 
     printf("Recherche de la pression de vapeur saturante. Les valeurs par défaut sont : \n");
     printf("\n");
 
-    printf("(1) T1 = %.3f K \n", T1);
+    printf("(1) globales->T1 = %.3f K \n", globales->T1);
 
-    printf("(2) Tc = %.3f K \n", Tc);
+    printf("(2) globales->Tc = %.3f K \n", globales->Tc);
 
-    printf("(3) Pc = %.3f bar \n", Pc);
+    printf("(3) globales->Pc = %.3f bar \n", globales->Pc);
 
-    printf("(4) Facteur acentric \"w\" = %.6f \n", acentric);
+    printf("(4) Facteur globales->acentric \"w\" = %.6f \n", globales->acentric);
 
-    printf("(5) Omega_A = %.6f \n", Omega_A);
+    printf("(5) globales->Omega_A = %.6f \n", globales->Omega_A);
 
-    printf("(6) Omega_B = %.6f \n", Omega_B);
+    printf("(6) globales->Omega_B = %.6f \n", globales->Omega_B);
 
     printf("\n");
 
@@ -457,33 +407,33 @@ void menuValeursDefautPVap(){
     {
         switch(choixMenu) {
             case 1:
-                printf("T1 = " );
-                scanf("%lf", &T1); //%lf spécifie que l'on attend un double, & spécifie à quelle variable attribuer la valeur.
+                printf("globales->T1 = " );
+                scanf("%lf", &globales->T1); //%lf spécifie que l'on attend un double, & spécifie à quelle variable attribuer la valeur.
                 printf("\n");
                 break;
             case 2:
-                printf("Tc = " );
-                scanf("%lf", &Tc);
+                printf("globales->Tc = " );
+                scanf("%lf", &globales->Tc);
                 printf("\n");
                 break;
             case 3:
-                printf("Pc = " );
-                scanf("%lf", &Pc);
+                printf("globales->Pc = " );
+                scanf("%lf", &globales->Pc);
                 printf("\n");
                 break;
             case 4:
-                printf("facteur acentric = " );
-                scanf("%lf", &acentric);
+                printf("facteur globales->acentric = " );
+                scanf("%lf", &globales->acentric);
                 printf("\n");
                 break;
             case 5:
-                printf("Omega_A = " );
-                scanf("%lf", &Omega_A);
+                printf("globales->Omega_A = " );
+                scanf("%lf", &globales->Omega_A);
                 printf("\n");
                 break;
             case 6:
-                printf("Omega_B = " );
-                scanf("%lf", &Omega_B);
+                printf("globales->Omega_B = " );
+                scanf("%lf", &globales->Omega_B);
                 printf("\n");
                 break;
             default:
