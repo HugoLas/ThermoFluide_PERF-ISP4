@@ -8,7 +8,7 @@
 /* Ici on donne le contenu des fonctions dont on aura besoin. Ces fonctions peuvent s'appeler entre elles. */
 
 
-Tableau* trouveZ(varPR* globales){ // Envisager de faire plutot une void qui manipule des valeurs dans globales
+Tableau* trouveZ(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines){ // Envisager de faire plutot une void qui manipule des valeurs dans globales
 
 globales->Tr = globales->T1/globales->Tc;
 //printf("globales->Tr = %.5f \n", globales->Tr);
@@ -29,7 +29,7 @@ PointsDepartNewton(TabBornesRacines,0.0,2,globales);
 NewtonRaphson(TabRacines,TabBornesRacines,0.00001,globales);
 
 if (TabRacines->taille != 1 && TabRacines->donnees[0] != -1000){
-    //pas de racine --> donner un code d'erreur à Zliq et Zgaz
+    //TODO : Inverser la condition. pas de racine --> donner un code d'erreur à Zliq et Zgaz
 
 }
 
