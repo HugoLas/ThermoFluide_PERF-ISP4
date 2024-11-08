@@ -28,13 +28,23 @@ globales->B = trouveB(globales);
 PointsDepartNewton(TabBornesRacines,0.0,2,globales);
 NewtonRaphson(TabRacines,TabBornesRacines,0.00001,globales);
 
-if (TabRacines->taille != 1 && TabRacines->donnees[0] != -1000){
-    //TODO : Inverser la condition. pas de racine --> donner un code d'erreur à Zliq et Zgaz
-
+if (TabRacines->taille == 1 || TabRacines->donnees[0] == -1000){ // Si Newton renvoie une erreur, je fais un tableau de deux cases et Zliq = Zvap = -1
+    
+    double *NouvTableauRacines = (double*)realloc(TabRacines->donnees,2 * sizeof(double)); 
+    
+    if (NouvTableauRacines != NULL) 
+    {
+        TabRacines->donnees = NouvTableauRacines; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
+        TabRacines->taille = 2;
+        TabRacines->donnees[0] = -1;
+        TabRacines->donnees[1] = -1;
+        printf("TrouveZ : Newton pas de racines, Reallocation de la mémoire -> Zliq = Zvap = -1 -> [-1;-1] \n");
+    }
+    else{
+        printf("TrouveZ : Erreur de réallocation mémoire.\n");
+    }
 }
 
-
-return 0;
 };  
 
 
