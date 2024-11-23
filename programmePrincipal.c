@@ -10,6 +10,7 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 #include "utilitaires.h"
 #include "Psat.h"
 #include "antoine.h"
+#include "hVapWatson.h"
 
 int main(){
 int choixMenuPrincipal;
@@ -24,6 +25,7 @@ do
     printf("(1) La pression de vapeur saturante pour une température ? (Peng-Robinson) \n");
     printf("(2) La pression de vapeur saturante pour une température ? (Formule d'Antoine) \n");
     printf("(3) Les valeurs de facteur de compressibilité (Z) pour une substance, pour une température ? (Peng-Robinson) \n");
+    printf("(4) L'enthalpie de vaporisation pour une température donnée. (Corrélations de Riedel et de Watson) \n");
     printf("(0) Pour quitter\n");
     printf("\n");
 
@@ -58,8 +60,8 @@ do
             break;
 
         case 2:
-            double *temperature = (double*)malloc(sizeof(double));
-            if (temperature == NULL) {
+            double *temperatureAntoine = (double*)malloc(sizeof(double));
+            if (temperatureAntoine == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation temperature.\n");
             return 0;
             }
@@ -71,10 +73,10 @@ do
             menuDefautAntoine(coefficientsAntoine);
             printf("Choix de la température [K] : (Sélectionnez une valeur cohérente avec la plage de validité des coefficients !)\n");
             printf("--> ");
-            scanf("%lf", temperature);
-            printf("Pression de vapeur saturante à T = %.2f K vaut %.4f bar.\n", *temperature, antoineFormula(coefficientsAntoine,*temperature));
+            scanf("%lf", temperatureAntoine);
+            printf("Pression de vapeur saturante à T = %.2f K vaut %.4f bar.\n", *temperatureAntoine, antoineFormula(coefficientsAntoine,*temperatureAntoine));
             free(coefficientsAntoine);
-            free(temperature);
+            free(temperatureAntoine);
             printf("\n");
             printf("Pour continuer, appuyez sur entrer...");
             getchar();
@@ -84,6 +86,30 @@ do
         case 3:
             printf("Pas encore dispo" );
             printf("\n");
+            break;
+
+        case 4:
+            double *temperatureWatson = (double*)malloc(sizeof(double));
+            if (temperatureWatson == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation temperature.\n");
+            return 0;
+            }
+            watsonStruct *parametres = (watsonStruct*)malloc(sizeof(watsonStruct));
+            if (parametres == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation parametres Watson.\n");
+            return 0;
+            }
+            menuDefautHvapWatson(parametres);
+            printf("Choix de la température [K] : \n");
+            printf("--> ");
+            scanf("%lf", temperatureWatson);
+            printf("Enthalpie de vaporisation à T = %.2f K vaut %.6f J/mol",*temperatureWatson, watsonFormula(parametres, *temperatureWatson));
+            free(parametres);
+            free(temperatureWatson);
+            printf("\n");
+            printf("Pour continuer, appuyez sur entrer...");
+            getchar();
+            getchar(); 
             break;
 
         default:

@@ -39,6 +39,12 @@ typedef struct{
     double C;
 } antoineStruct;
 
+typedef struct{
+    double tempNormal;
+    double tempCritic;
+    double pressionCritic;
+}   watsonStruct;
+
 /* Déclaration des fonctions*/
 double valeurMax(Tableau *tab);
 double valeurMin(Tableau *tab);
