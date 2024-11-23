@@ -4,12 +4,12 @@
 
 
 double trouvePsat(double tolerance, varPR* globales){
-    double Preduit, QLiq, QVap, phiLiq, phiVap;
+    double QLiq, QVap, phiLiq, phiVap;
     double pas[] = {0.0001,0.00001,0.000001};
     int compteurPas;
 
     compteurPas = 0;
-    Preduit = 0.000001;
+    globales->Pr = 0.000001;
 
     Tableau *TabBornesRacines = (Tableau*)malloc(sizeof(Tableau));
     instancierTableau(TabBornesRacines,6);
@@ -56,6 +56,11 @@ double trouvePsat(double tolerance, varPR* globales){
             //printf("globales->A = %.5f \n", globales->A);
             globales->B = trouveB(globales);
             //printf("globales->B = %.5f \n", globales->B);
+            printf("A = %f \n",globales->acentric);
+            printf("A = %f \n",globales->A);
+            printf("B = %f \n",globales->B);
+            //printf("Continuer ? -> appuyer sur entrer \n"); //Debugging
+            //getchar(); //Debugging
             PointsDepartNewton(TabBornesRacines,0.0,2,globales);
             NewtonRaphson(TabRacines,TabBornesRacines,0.00001,globales);
             if (TabRacines->taille != 1 && TabRacines->donnees[0] != -1000)
@@ -79,19 +84,19 @@ double trouvePsat(double tolerance, varPR* globales){
                     free(TabRacines->donnees);
                     free(TabBornesRacines);
                     free(TabRacines);
-                    return Preduit;
+                    return globales->Pr;
                 }
                 else
                 {
-                    Preduit = Preduit + pas[compteurPas];
+                    globales->Pr = globales->Pr + pas[compteurPas];
                 }
             }
             else
             {
-                Preduit = Preduit + pas[compteurPas];
+                globales->Pr = globales->Pr + pas[compteurPas];
             }
             
-        } while (Preduit < 3); // la valeur 3 est arbitraire, cela semble très grand pour une pression reduite + le programme est limité à globales->Tr=1 pour lequel Pr vaut environ 1 aussi.
+        } while (globales->Pr < 3); // la valeur 3 est arbitraire, cela semble très grand pour une pression reduite + le programme est limité à globales->Tr=1 pour lequel Pr vaut environ 1 aussi.
         compteurPas = compteurPas + 1;
     } while (compteurPas < 3);
 

@@ -37,5 +37,5 @@ typedef struct{ // Cette structure s'apparente à des variables globales. Elle e
 double valeurMax(Tableau *tab);
 double valeurMin(Tableau *tab);
 void instancierTableau(Tableau *tab, int taille);
-void menuValeursDefautPvap(varPR* globales);
+void menuDefautPvap(varPR* globales);
 

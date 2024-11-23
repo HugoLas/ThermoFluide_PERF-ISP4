@@ -1,7 +1,58 @@
 #include "utilitaires.h"
 
-void menuValeursDefautPVap(varPR* globales){
-    int choixMenu;
+double valeurMin(Tableau *tab){
+    int i;
+    double valMin;
+    if (tab->taille==0)
+    {
+        printf("erreur : tableau de taille nulle. valeurMax = -1000");
+        return -1000;
+    }
+    
+    valMin = tab->donnees[0];
+    for (i = 0; i < tab->taille; i++)
+    {
+        if (tab->donnees[i]<valMin)
+        {
+            valMin = tab->donnees[i];
+        }
+    }
+    return valMin;
+}
+
+double valeurMax(Tableau *tab){
+    int i;
+    double valMax;
+    if (tab->taille==0)
+    {
+        printf("erreur : tableau de taille nulle. valeurMax = -1000");
+        return -1000;
+    }
+    
+    valMax = tab->donnees[0];
+    for (i = 0; i < tab->taille; i++)
+    {
+        if (tab->donnees[i]>valMax)
+        {
+            valMax = tab->donnees[i];
+        }
+    }
+    return valMax;
+}
+
+void instancierTableau(Tableau *tab, int taille){   // Cette fonction permet la création du tableau, associée à sa taille. Le tableau est alloué mais non peuplé.
+    tab->donnees = (double*)malloc(taille*sizeof(double));
+    tab->taille = taille;
+    if (tab->donnees == NULL)
+    {
+        printf("Erreur de malloc : Structure tableau, allocation échouée");
+        tab->taille = 0;
+    }
+}
+
+void menuDefautPvap(varPR *globales)
+{
+        int choixMenu;
 
     printf("Recherche de la pression de vapeur saturante. Les valeurs par défaut sont : \n");
     printf("\n");
@@ -63,56 +114,5 @@ void menuValeursDefautPVap(varPR* globales){
         printf("Pour changer une autre valeur, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
         printf("--> ");
         scanf("%d", &choixMenu);
-    }
-
-}
-
-double valeurMin(Tableau *tab){
-    int i;
-    double valMin;
-    if (tab->taille==0)
-    {
-        printf("erreur : tableau de taille nulle. valeurMax = -1000");
-        return -1000;
-    }
-    
-    valMin = tab->donnees[0];
-    for (i = 0; i < tab->taille; i++)
-    {
-        if (tab->donnees[i]<valMin)
-        {
-            valMin = tab->donnees[i];
-        }
-    }
-    return valMin;
-}
-
-double valeurMax(Tableau *tab){
-    int i;
-    double valMax;
-    if (tab->taille==0)
-    {
-        printf("erreur : tableau de taille nulle. valeurMax = -1000");
-        return -1000;
-    }
-    
-    valMax = tab->donnees[0];
-    for (i = 0; i < tab->taille; i++)
-    {
-        if (tab->donnees[i]>valMax)
-        {
-            valMax = tab->donnees[i];
-        }
-    }
-    return valMax;
-}
-
-void instancierTableau(Tableau *tab, int taille){   // Cette fonction permet la création du tableau, associée à sa taille. Le tableau est alloué mais non peuplé.
-    tab->donnees = (double*)malloc(taille*sizeof(double));
-    tab->taille = taille;
-    if (tab->donnees == NULL)
-    {
-        printf("Erreur de malloc : Structure tableau, allocation échouée");
-        tab->taille = 0;
     }
 }

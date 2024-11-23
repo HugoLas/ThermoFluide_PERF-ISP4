@@ -161,7 +161,7 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, varPR* g
             printf("Erreur de réallocation mémoire : tableau de 6 cases --> tableau de %d cases\n",compteurIntervalle);
         }
     }       
-}
+}   
 
 
 double trouveQZB(double Z, varPR* globales){
@@ -183,7 +183,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
     
     if (tabIntervalles->donnees[0]==-1 && tabIntervalles->donnees[1]==-1)
     {
-        printf("(!) pas de racine sur l'intervalle -> racine = -1000");
+        printf("(!) pas de racine sur l'intervalle -> racine = -1000\n");
         tabResult->donnees[0] = -1000;
         return;
     }
@@ -195,7 +195,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
         dfx0 = derivePR(x0,globales);
         if (dfx0 < 0.000000001 && dfx0 > -0.000000001)
         {
-            printf("Tangente horizontale, x0 = x0 - 0.1");
+            printf("Tangente horizontale, x0 = x0 - 0.1\n");
             x0 = x0 - 0.1;
         }
         
