@@ -14,6 +14,7 @@ int main(){
 int choixMenuPrincipal;
 double Psaturation; //envisager d'en faire une allocation dynamique uniquement appelée dans case 1 et 2
 printf("Bienvenue dans ProSpen -2. \n");
+lectureAsciiArt("art.txt");
 printf("\n");
 
 do

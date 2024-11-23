@@ -38,4 +38,5 @@ double valeurMax(Tableau *tab);
 double valeurMin(Tableau *tab);
 void instancierTableau(Tableau *tab, int taille);
 void menuDefautPvap(varPR* globales);
+void lectureAsciiArt(char *str);
 

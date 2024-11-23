@@ -52,7 +52,7 @@ void instancierTableau(Tableau *tab, int taille){   // Cette fonction permet la 
 
 void menuDefautPvap(varPR *globales)
 {
-        int choixMenu;
+    int choixMenu;
 
     printf("Recherche de la pression de vapeur saturante. Les valeurs par défaut sont : \n");
     printf("\n");
@@ -115,4 +115,22 @@ void menuDefautPvap(varPR *globales)
         printf("--> ");
         scanf("%d", &choixMenu);
     }
+}
+
+void lectureAsciiArt(char *str){
+    FILE *file;
+    char line[1024]; //Longueur arbitraire, je suppose que cette longueur de ligne est suffisante pour afficher l'ASCII art.
+
+    file = fopen(str,"r");
+    if (file == NULL) {
+        printf("Erreur ouverture fichier");
+        return;
+    }
+
+    while (fgets(line, sizeof(line), file) != NULL)
+    {
+        printf("%s", line);
+    }
+    fclose(file);
+    return;
 }
