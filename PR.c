@@ -38,7 +38,7 @@ if (TabRacines->taille == 1 || TabRacines->donnees[0] == -1000){ // Si Newton re
         TabRacines->taille = 2;
         TabRacines->donnees[0] = -1;
         TabRacines->donnees[1] = -1;
-        printf("TrouveZ : Newton pas de racines, Reallocation de la mémoire -> Zliq = Zvap = -1 -> [-1;-1] \n");
+        //printf("TrouveZ : Newton pas de racines, Reallocation de la mémoire -> Zliq = Zvap = -1 -> [-1;-1] \n");
     }
     else{
         printf("TrouveZ : Erreur de réallocation mémoire.\n");
@@ -50,9 +50,9 @@ if (TabRacines->taille == 1 || TabRacines->donnees[0] == -1000){ // Si Newton re
 
 double trouveA(varPR* globales){
     double A;
-    printf("globales->Pr = %f \n", globales->Pr);
+    //printf("globales->Pr = %f \n", globales->Pr);
     A = globales->Omega_A*globales->alpha*(globales->Pr/(globales->Tr*globales->Tr));
-    printf("A = %f \n", A);
+    //printf("A = %f \n", A);
     return A;
 }
 
@@ -98,7 +98,7 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, varPR* g
                                     au début du tableau quand on change de pas. */ 
         abscisse = borneInf;
         ordonnee = PR(abscisse,globales);    // Initialisation de l'ordonnee
-        printf("ordonnée = %f\n",ordonnee);
+        //printf("ordonnée = %f\n",ordonnee);
         if (ordonnee < 0.000000001 && ordonnee > -0.000000001){                      // Si jamais (quasi impossible) on tombe sur zero tout pile avec la premiere abscisse, on a déjà une première racine. 
             tab->donnees[compteurIntervalle] = abscisse - pas[compteurPas];   // Donc pour que la racine soit dans l'intervalle, on retire 1*pas ici..
             compteurIntervalle = compteurIntervalle +1;
@@ -113,7 +113,7 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, varPR* g
         if (ordonneeTampon<0.000000001 && ordonneeTampon >-0.000000001 && tab->donnees[compteurIntervalle-1]!=abscisse && tab->donnees[compteurIntervalle-1]!=abscisse-pas[compteurPas]) /* Autrement dit, =0 (donc on a trouvé une racine) mais avec les doubles, un == pourrait poser problème. Normalement on a environ droit à 15 chiffres significatifs.
                                                                                                                                                                                             Je vérifie aussi qu'on vient pas de déclarer l'abscisse précédente (ou actuelle car c'est possible aussi) comme racine, sinon c'est juste qu'on la détecte en double à tort.*/
         {
-            printf("ordonneeTampon ~= 0 --> Abscisse : %f, ordonnee : %.10f, ordonneeTampon : %.10f \n",abscisse,ordonnee,ordonneeTampon);
+            //printf("ordonneeTampon ~= 0 --> Abscisse : %f, ordonnee : %.10f, ordonneeTampon : %.10f \n",abscisse,ordonnee,ordonneeTampon);
             tab->donnees[compteurIntervalle] = abscisse - pas[compteurPas];
             compteurIntervalle = compteurIntervalle +1;
             tab->donnees[compteurIntervalle] = abscisse + pas[compteurPas]; /* En réalité si ordonneeTampon vaut 0 c'est qu'on a trouvé une racine. Pour l'exercice je renvoie un intervalle 
@@ -121,7 +121,7 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, varPR* g
             compteurIntervalle = compteurIntervalle +1;
         }
         else if (ordonneeTampon*ordonnee<0 && tab->donnees[compteurIntervalle-1]!=abscisse && tab->donnees[compteurIntervalle-1]!=abscisse-pas[compteurPas]) {
-            printf("ordonneeTampon*ordonnee<0 --> Abscisse : %f, ordonnee : %f, ordonneeTampon : %f \n",abscisse,ordonnee,ordonneeTampon);
+            //printf("ordonneeTampon*ordonnee<0 --> Abscisse : %f, ordonnee : %f, ordonneeTampon : %f \n",abscisse,ordonnee,ordonneeTampon);
             tab->donnees[compteurIntervalle] = abscisse - pas[compteurPas];
             compteurIntervalle = compteurIntervalle +1;
             tab->donnees[compteurIntervalle] = abscisse;
@@ -140,7 +140,7 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, varPR* g
         {
             tab->donnees = NouvTableauAbscisses; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
             tab->taille = compteurIntervalle;
-            printf("Reallocation de la mémoire, %i bornes \n", compteurIntervalle);
+            //printf("Reallocation de la mémoire, %i bornes \n", compteurIntervalle);
         }
         else{
             printf("Erreur de réallocation mémoire : tableau de 6 cases --> tableau de %d cases\n",compteurIntervalle);
@@ -155,7 +155,7 @@ void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, varPR* g
             tab->taille = 2;
             tab->donnees[0] = -1;
             tab->donnees[1] = -1;
-            printf("PAS DE RACINE SUR INTERVALLE ABSCISSES -> Reallocation de la mémoire -> intervalle = [-1;-1] \n");
+            //printf("PAS DE RACINE SUR INTERVALLE ABSCISSES -> Reallocation de la mémoire -> intervalle = [-1;-1] \n");
         }
         else{
             printf("Erreur de réallocation mémoire : tableau de 6 cases --> tableau de %d cases\n",compteurIntervalle);
@@ -183,7 +183,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
     
     if (tabIntervalles->donnees[0]==-1 && tabIntervalles->donnees[1]==-1)
     {
-        printf("(!) pas de racine sur l'intervalle -> racine = -1000\n");
+        //printf("(!) pas de racine sur l'intervalle -> racine = -1000\n");
         tabResult->donnees[0] = -1000;
         return;
     }
@@ -195,7 +195,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
         dfx0 = derivePR(x0,globales);
         if (dfx0 < 0.000000001 && dfx0 > -0.000000001)
         {
-            printf("Tangente horizontale, x0 = x0 - 0.1\n");
+            //printf("Tangente horizontale, x0 = x0 - 0.1\n");
             x0 = x0 - 0.1;
         }
         
@@ -206,7 +206,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
             x0 = x1;
         }
         tabResult->donnees[tabResult->taille]=x1;
-        printf("Racine %i = %f \n",tabResult->taille+1, tabResult->donnees[tabResult->taille]);
+        //printf("Racine %i = %f \n",tabResult->taille+1, tabResult->donnees[tabResult->taille]);
         tabResult->taille=tabResult->taille+1;
     }
     if (tabIntervalles->taille == 2 && tabIntervalles->donnees[0]!=-1) // -1 correspond au code d'erreur renvoyé pour 0 racine. Ici on se place dans le cas d'une racine unique.
@@ -216,7 +216,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
     {
         tabResult->donnees = NouvTab; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
         tabResult->taille = 1;
-        printf("Reallocation de la mémoire Newton racine unique\n");
+        //printf("Reallocation de la mémoire Newton racine unique\n");
     }
     else{
         printf("Erreur de réallocation mémoire fonction NewtonRaphton avec une seule racine.");
@@ -232,7 +232,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
     {
         tabResult->donnees = NouvTab; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
         tabResult->taille = 2;
-        printf("Reallocation de la mémoire Newton 2 racines\n");
+        //printf("Reallocation de la mémoire Newton 2 racines\n");
     }
     else{
         printf("Erreur de réallocation mémoire fonction NewtonRaphton");

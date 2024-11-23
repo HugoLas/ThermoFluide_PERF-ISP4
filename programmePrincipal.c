@@ -9,13 +9,13 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 #include "PR.h"
 #include "utilitaires.h"
 #include "Psat.h"
+#include "antoine.h"
 
 int main(){
 int choixMenuPrincipal;
 double Psaturation; //envisager d'en faire une allocation dynamique uniquement appelée dans case 1 et 2
-printf("Bienvenue dans ProSpen -2. \n");
 lectureAsciiArt("art.txt");
-printf("\n");
+printf("\n\n");
 
 do
 {
@@ -33,6 +33,10 @@ do
     switch(choixMenuPrincipal) {
         case 1:
             varPR *globalesPr = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et Psat.c. La structure en question est définie dans utilitaires.h
+            if (globalesPr == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation globalesPr.\n");
+            return 0;
+            }
             globalesPr->T1 = 173;           // Valeurs par défaut.
             globalesPr->Tc = 305.4;         // Valeurs par défaut.
             globalesPr->Pc = 48.8;          // Valeurs par défaut.
@@ -52,16 +56,38 @@ do
             getchar();
             printf("\n");
             break;
+
         case 2:
-            printf("Pas encore dispo" );
+            double *temperature = (double*)malloc(sizeof(double));
+            if (temperature == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation temperature.\n");
+            return 0;
+            }
+            antoineStruct *coefficientsAntoine = (antoineStruct*)malloc(sizeof(antoineStruct));
+            if (coefficientsAntoine == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation coefficientsAntoine.\n");
+            return 0;
+            }
+            menuDefautAntoine(coefficientsAntoine);
+            printf("Choix de la température [K] : (Sélectionnez une valeur cohérente avec la plage de validité des coefficients !)\n");
+            printf("--> ");
+            scanf("%lf", temperature);
+            printf("Pression de vapeur saturante à T = %.2f K vaut %.4f bar.\n", *temperature, antoineFormula(coefficientsAntoine,*temperature));
+            free(coefficientsAntoine);
+            free(temperature);
             printf("\n");
+            printf("Pour continuer, appuyez sur entrer...");
+            getchar();
+            getchar();
             break;
+
         case 3:
             printf("Pas encore dispo" );
             printf("\n");
             break;
+
         default:
-            printf("Numéro de valeur non reconnue. \n" );
+            printf("Numéro de valeur non reconnu. \n" );
     }
 
 } while (choixMenuPrincipal != 0);

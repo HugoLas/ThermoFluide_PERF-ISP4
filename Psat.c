@@ -19,7 +19,7 @@ double trouvePsat(double tolerance, varPR* globales){
 
     do
     {
-        printf("Pas = %f \n",pas[compteurPas]);
+        //printf("Pas = %f \n",pas[compteurPas]);
         do
         {
             if (TabBornesRacines->taille != 6) // Si à l'issue de la dernière boucle on a redim le tableau, il faut le rétablir à 6 cases au cas où à la prochaine itération on ait 3 racines.
@@ -29,7 +29,7 @@ double trouvePsat(double tolerance, varPR* globales){
                 {
                     TabBornesRacines->donnees = NouvTableauBornes; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
                     TabBornesRacines->taille = 6;
-                    printf("Reallocation de la mémoire\n");
+                    //rintf("Reallocation de la mémoire\n");
                 }
                 else{
                     printf("Erreur de réallocation mémoire : Realloc du tableau des bornes des racines pour nouvelle tentative de pression reduite. \n");
@@ -44,7 +44,7 @@ double trouvePsat(double tolerance, varPR* globales){
                 {
                     TabRacines->donnees = NouvTableauRacines; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
                     TabRacines->taille = 3;
-                    printf("Reallocation de la mémoire\n");
+                    //printf("Reallocation de la mémoire\n");
                 }
                 else{
                     printf("Erreur de réallocation mémoire : Realloc du tableau des racines pour nouvelle tentative de pression reduite. \n");
@@ -56,9 +56,9 @@ double trouvePsat(double tolerance, varPR* globales){
             //printf("globales->A = %.5f \n", globales->A);
             globales->B = trouveB(globales);
             //printf("globales->B = %.5f \n", globales->B);
-            printf("A = %f \n",globales->acentric);
-            printf("A = %f \n",globales->A);
-            printf("B = %f \n",globales->B);
+            //printf("Acentric = %f \n",globales->acentric);
+            //printf("A = %f \n",globales->A);
+            //printf("B = %f \n",globales->B);
             //printf("Continuer ? -> appuyer sur entrer \n"); //Debugging
             //getchar(); //Debugging
             PointsDepartNewton(TabBornesRacines,0.0,2,globales);

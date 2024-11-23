@@ -33,6 +33,12 @@ typedef struct{ // Cette structure s'apparente à des variables globales. Elle e
     double B;
 } varPR;
 
+typedef struct{
+    double A;
+    double B;
+    double C;
+} antoineStruct;
+
 /* Déclaration des fonctions*/
 double valeurMax(Tableau *tab);
 double valeurMin(Tableau *tab);
