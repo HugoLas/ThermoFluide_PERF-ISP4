@@ -8,46 +8,19 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 #include <math.h>   // Permet d'effectuer des calculs
 #include <stdlib.h> // Permet l'allocation dynamic de mémoire
 #include <stdio.h>
-
-//~~~~~~~~~~~~~~~~~~~~~~~~~ Déclaration des structures ~~~~~~~~~~~~~~~~~~~~~~~~~
-
-/*Les structures sont des objets qui sont constitués d'attributs, par exemple on peut avoir une structure "personne" avec pour attributs un entier âge, et un entier taille.*/
-
-typedef struct{     // Définit une structure "Tableau" qui permet d'obtenir à la fois les données du tableau mais aussi sa taille. (en fonction du nb. de racine, la taille change)
-    int taille;
-    double *donnees;
-} Tableau;
-
-typedef struct{ // Cette structure s'apparente à des variables globales. Elle est passée à toutes les fonctions de la librairie.
-    double T1;
-    double P1;
-    double Tc;
-    double Pc;
-    double Tr;
-    double Pr;
-    double Omega_A; 
-    double Omega_B;
-    double acentric;
-    double alpha;
-    double A;
-    double B;
-} varPR;
+#include "utilitaires.h"
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~ Déclarations des fonctions ~~~~~~~~~~~~~~~~~~~~~~~~~
 
 /* Déclare les fonctions avant main pour les signaler au compiler. */
 
-void menuValeursDefautPR();
-double trouveA(double Pr);
-double trouveB(double Pr);
-double trouveAlpha();
-double PR(double Z);
-double derivePR(double Z);
-double trouveQZB(double Z);
-double trouvePhi(double Z, double Q);
-double valeurMax(Tableau *tab);
-double valeurMin(Tableau *tab);
-void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup); // La fonction prend en entrée l'adresse du tableau sur lequel travailler, les bornes de la fonction.
-void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero);
-double trouvePsat(double tolerance);
-void instancierTableau(Tableau *tab, int taille);
+void trouveZ(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines);
+double trouveA(varPR* globales);
+double trouveB(varPR* globales);
+double trouveAlpha(varPR* globales);
+double PR(double Z, varPR* globales);
+double derivePR(double Z, varPR* globales);
+double trouveQZB(double Z, varPR* globales);
+double trouvePhi(double Z, double Q, varPR* globales);
+void PointsDepartNewton(Tableau *tab, double borneInf, double borneSup, varPR* globales); // La fonction prend en entrée l'adresse du tableau sur lequel travailler, les bornes de la fonction.
+void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero, varPR* globales);
