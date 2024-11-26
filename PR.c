@@ -178,7 +178,7 @@ double trouvePhi(double Z, double Q, varPR* globales){
 
 void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero, varPR* globales){
     int maxBoucle = 1000;
-    int i;
+    int i, iteration;
     double x0, x1, dfx0, mini, maxi;
     
     if (tabIntervalles->donnees[0]==-1 && tabIntervalles->donnees[1]==-1)
@@ -199,17 +199,32 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
             x0 = x0 - 0.1;
         }
         
+        iteration = 0;
         x1=0.1; // Simplement pour rentrer dans la boucle
-        while (fabs(PR(x1, globales))>ecartZero && i<maxBoucle)
+        while (fabs(PR(x1, globales))>ecartZero && iteration<maxBoucle)
         {
+            if (!(derivePR(x0, globales) < 0.000000001 && derivePR(x0, globales) > -0.000000001)){ // Avant de diviser par la dérivée, je vérifie qu'elle est non nulle.
             x1 = x0 - (PR(x0, globales)/derivePR(x0, globales));
             x0 = x1;
+            }
+            else{
+                printf("Attention, tangente horizontale pendant l'algo de Newton mais solution éloignée d'après le critère ecartZero. (Tester d'augmenter la tolérance sur ecartZero)\n");
+                x1=-1;
+                break;
+            }
+            iteration = iteration+1;
         }
+        if (iteration > maxBoucle)
+        {
+            printf("Attention, nombre d'itération max atteint lors de Newton-Raphone. Cette limite est fixée à maxBoucle = %d \n", maxBoucle);
+            x1=-1;
+        }
+        
         tabResult->donnees[tabResult->taille]=x1;
         //printf("Racine %i = %f \n",tabResult->taille+1, tabResult->donnees[tabResult->taille]);
         tabResult->taille=tabResult->taille+1;
     }
-    if (tabIntervalles->taille == 2 && tabIntervalles->donnees[0]!=-1) // -1 correspond au code d'erreur renvoyé pour 0 racine. Ici on se place dans le cas d'une racine unique.
+    if (tabIntervalles->taille == 2 && tabIntervalles->donnees[0]!=-1) // -1 correspond au code d'erreur renvoyé pour 0 racine. Ici on se place dans le cas d'une racine unique. (une racine = 2 cases dans le tableau d'intervalles)
     {
     double *NouvTab = (double*)realloc(tabResult->donnees,1 * sizeof(double)); 
     if (NouvTab != NULL) 
