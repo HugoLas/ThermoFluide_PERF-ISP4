@@ -1,5 +1,4 @@
 #include "hVapWatson.h"
-#include "utilitaires.h"
 
 void menuDefautHvapWatson(watsonStruct* proprietes){
 int choixMenu;
