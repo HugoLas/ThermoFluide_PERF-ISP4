@@ -117,6 +117,80 @@ void menuDefautPvap(varPR *globales)
     }
 }
 
+void menuDefautValeursZ(varPR *globales)
+{
+    int choixMenu;
+
+    printf("Recherche des valeurs de facteur de compressibilité pour un couple [T;C]. Les valeurs par défaut sont : \n");
+    printf("\n");
+
+    printf("(1) T1 = %.3f K \n", globales->T1);
+
+    printf("(2) P1 = %.3f bar \n", globales->P1);
+
+    printf("(3) Tc = %.3f K \n", globales->Tc);
+
+    printf("(4) Pc = %.3f bar \n", globales->Pc);
+
+    printf("(5) Facteur acentric \"w\" = %.6f \n", globales->acentric);
+
+    printf("(6) Omega_A = %.6f \n", globales->Omega_A);
+
+    printf("(7) Omega_B = %.6f \n", globales->Omega_B);
+
+    printf("\n");
+
+    printf("Pour changer une de ces valeurs, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
+    printf("--> ");
+
+    scanf("%d", &choixMenu); // %d est le code qui indique que l'on souhaite un entier.
+    while (choixMenu != 0)
+    {
+        switch(choixMenu) {
+            case 1:
+                printf("T1 = " );
+                scanf("%lf", &globales->T1); //%lf spécifie que l'on attend un double, & spécifie à quelle variable attribuer la valeur.
+                printf("\n");
+                break;
+            case 2:
+                printf("P1 = ");
+                scanf("%lf", &globales->P1);
+            case 3:
+                printf("Tc = " );
+                scanf("%lf", &globales->Tc);
+                printf("\n");
+                break;
+            case 4:
+                printf("Pc = " );
+                scanf("%lf", &globales->Pc);
+                printf("\n");
+                break;
+            case 5:
+                printf("facteur acentric = " );
+                scanf("%lf", &globales->acentric);
+                printf("\n");
+                break;
+            case 6:
+                printf("Omega_A = " );
+                scanf("%lf", &globales->Omega_A);
+                printf("\n");
+                break;
+            case 7:
+                printf("Omega_B = " );
+                scanf("%lf", &globales->Omega_B);
+                printf("\n");
+                break;
+            case 0:
+                printf("\n");
+            default:
+                printf("Numéro de valeur non reconnue. \n" );
+        }
+        printf("Pour changer une autre valeur, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
+        printf("--> ");
+        scanf("%d", &choixMenu);
+    }
+}
+
 void lectureAsciiArt(char *str){
     FILE *file;
     char line[1024]; //Longueur arbitraire, je suppose que cette longueur de ligne est suffisante pour afficher l'ASCII art.

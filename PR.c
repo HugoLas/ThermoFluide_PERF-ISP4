@@ -28,8 +28,8 @@ globales->B = trouveB(globales);
 PointsDepartNewton(TabBornesRacines,0.0,2,globales);
 NewtonRaphson(TabRacines,TabBornesRacines,0.00001,globales);
 
-if (TabRacines->taille == 1 || TabRacines->donnees[0] == -1000){ // Si Newton renvoie une erreur, je fais un tableau de deux cases et Zliq = Zvap = -1
-    
+if (TabRacines->taille == 1 && TabRacines->donnees[0] == -1000){ // Si Newton renvoie une erreur, je fais un tableau de deux cases et Zliq = Zvap = -1
+    printf("Erreur -> TabRacines->taille == 1 && TabRacines->donnees[0] == -1000 \n");
     double *NouvTableauRacines = (double*)realloc(TabRacines->donnees,2 * sizeof(double)); 
     
     if (NouvTableauRacines != NULL) 
@@ -216,7 +216,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
         }
         if (iteration > maxBoucle)
         {
-            printf("Attention, nombre d'itération max atteint lors de Newton-Raphone. Cette limite est fixée à maxBoucle = %d \n", maxBoucle);
+            printf("Attention, nombre d'itération max atteint lors de Newton-Raphson. Cette limite est fixée à maxBoucle = %d \n", maxBoucle);
             x1=-1;
         }
         

@@ -34,25 +34,25 @@ do
 
     switch(choixMenuPrincipal) {
         case 1:
-            varPR *globalesPr = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et Psat.c. La structure en question est définie dans utilitaires.h
-            if (globalesPr == NULL) {
+            varPR *globalesPsat = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de Psat.c. La structure en question est définie dans utilitaires.h
+            if (globalesPsat == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation globalesPr.\n");
             return 0;
             }
-            globalesPr->T1 = 173;           // Valeurs par défaut.
-            globalesPr->Tc = 305.4;         // Valeurs par défaut.
-            globalesPr->Pc = 48.8;          // Valeurs par défaut.
-            globalesPr->Omega_A = 0.457236; // Valeurs par défaut.
-            globalesPr->Omega_B = 0.077796; // Valeurs par défaut.
-            globalesPr->acentric = 0.099;   // Valeurs par défaut.
-            menuDefautPvap(globalesPr);
-            globalesPr->Tr = globalesPr->T1/globalesPr->Tc;
-            globalesPr->Pr = globalesPr->P1/globalesPr->Pc;
-            globalesPr->alpha = trouveAlpha(globalesPr);
-            globalesPr->Pr = trouvePsat(1, globalesPr);
-            Psaturation = globalesPr->Pr*globalesPr->Pc;
-            printf("Pression de vapeur saturante à T = %.2f K vaut %.4f bar.\n", globalesPr->T1, Psaturation);
-            free(globalesPr);
+            globalesPsat->T1 = 173;           // Valeurs par défaut.
+            globalesPsat->Tc = 305.4;         // Valeurs par défaut.
+            globalesPsat->Pc = 48.8;          // Valeurs par défaut.
+            globalesPsat->Omega_A = 0.457236; // Valeurs par défaut.
+            globalesPsat->Omega_B = 0.077796; // Valeurs par défaut.
+            globalesPsat->acentric = 0.099;   // Valeurs par défaut.
+            menuDefautPvap(globalesPsat);
+            globalesPsat->Tr = globalesPsat->T1/globalesPsat->Tc;
+            globalesPsat->Pr = globalesPsat->P1/globalesPsat->Pc;
+            globalesPsat->alpha = trouveAlpha(globalesPsat);
+            globalesPsat->Pr = trouvePsat(1, globalesPsat);
+            Psaturation = globalesPsat->Pr*globalesPsat->Pc;
+            printf("Pression de vapeur saturante à T = %.2f K vaut %.4f bar.\n", globalesPsat->T1, Psaturation);
+            free(globalesPsat);
             printf("Pour continuer, appuyez sur entrer...");
             getchar();
             getchar();
@@ -84,8 +84,54 @@ do
             break;
 
         case 3:
-            printf("Pas encore dispo" );
+            //printf("Pas encore dispo" );
+            //printf("\n");
+            varPR *globalesPr = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et Psat.c. La structure en question est définie dans utilitaires.h
+            if (globalesPr == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation globalesPr.\n");
+            return 0;
+            }
+            globalesPr->T1 = 173;           // Valeur par défaut.
+            globalesPr->P1 = 0.5271;        // Valeur par défaut. (provient de la question sur pVap)
+            globalesPr->Tc = 305.4;         // Valeur par défaut.
+            globalesPr->Pc = 48.8;          // Valeur par défaut.
+            globalesPr->Omega_A = 0.457236; // Valeur par défaut.
+            globalesPr->Omega_B = 0.077796; // Valeur par défaut.
+            globalesPr->acentric = 0.099;   // Valeur par défaut.
+            menuDefautValeursZ(globalesPr);
+            Tableau *TableauBornesRacines = (Tableau*)malloc(sizeof(Tableau));
+            if (TableauBornesRacines == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines dans couple Z.\n");
+            return 0;
+            }
+            instancierTableau(TableauBornesRacines,6);
+            Tableau *TableauRacines = (Tableau*)malloc(sizeof(Tableau));
+            if (TableauRacines == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation TableauRacines dans couple Z.\n");
+            return 0;
+            }
+            instancierTableau(TableauRacines,3);
+            trouveZ(globalesPr, TableauBornesRacines, TableauRacines);
+            if (TableauRacines->taille==1)
+            {
+                printf("Pas d'équilibre liquide vapeur, Z = %.4f \n",TableauRacines->donnees[0]);
+            }
+            else if ((TableauRacines->taille==2) && (TableauRacines->donnees[0]==-1))
+            {
+                printf("Erreur lors de la recherche du couple Z, erreur provient de NewtonRaphson.");
+            }
+            else
+            {
+                printf("Equilibre liquide vapeur, Z_liq = %.4f, Z_vap = %.4f \n",TableauRacines->donnees[0],TableauRacines->donnees[1]);
+            }
+            free(TableauBornesRacines->donnees);
+            free(TableauRacines->donnees);
+            free(TableauBornesRacines);
+            free(TableauRacines);
             printf("\n");
+            printf("Pour continuer, appuyez sur entrer...");
+            getchar();
+            getchar();
             break;
 
         case 4:
@@ -111,7 +157,8 @@ do
             getchar();
             getchar(); 
             break;
-
+        case 0:
+            printf("\n");
         default:
             printf("Numéro de valeur non reconnu. \n" );
     }
