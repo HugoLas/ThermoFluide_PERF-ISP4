@@ -110,6 +110,7 @@ void menuDefautPvap(varPR *globales)
                 break;
             default:
                 printf("Numéro de valeur non reconnue. \n" );
+                break;
         }
         printf("Pour changer une autre valeur, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
         printf("--> ");
@@ -155,6 +156,7 @@ void menuDefautValeursZ(varPR *globales)
             case 2:
                 printf("P1 = ");
                 scanf("%lf", &globales->P1);
+                break;
             case 3:
                 printf("Tc = " );
                 scanf("%lf", &globales->Tc);
@@ -182,8 +184,10 @@ void menuDefautValeursZ(varPR *globales)
                 break;
             case 0:
                 printf("\n");
+                break;
             default:
                 printf("Numéro de valeur non reconnue. \n" );
+                break;
         }
         printf("Pour changer une autre valeur, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
         printf("--> ");

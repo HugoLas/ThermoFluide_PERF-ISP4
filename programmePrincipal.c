@@ -12,6 +12,7 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 #include "antoine.h"
 #include "hVapWatson.h"
 #include "hVapEOS.h"
+#include "masseVolumique.h"
 
 
 int main(){
@@ -29,6 +30,7 @@ do
     printf("(3) Les valeurs de facteur de compressibilité (Z) pour une substance, pour une température ? (Peng-Robinson) \n");
     printf("(4) L'enthalpie de vaporisation pour une température donnée. (Corrélations de Riedel et de Watson) \n");
     printf("(5) L'enthalpie de vaporisation pour un couple température/pression donné. (Equation d'état, Peng-Robinson) \n");
+    printf("(6) La masse volumique d'un liquide pour un couple température/pression donné. (Equation d'état, Peng-Robinson) \n");
     printf("(0) Pour quitter\n");
     printf("\n");
 
@@ -71,6 +73,7 @@ do
             antoineStruct *coefficientsAntoine = (antoineStruct*)malloc(sizeof(antoineStruct));
             if (coefficientsAntoine == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation coefficientsAntoine.\n");
+            free(temperatureAntoine);
             return 0;
             }
             menuDefautAntoine(coefficientsAntoine);
@@ -103,12 +106,16 @@ do
             Tableau *TableauBornesRacinesPR = (Tableau*)malloc(sizeof(Tableau));
             if (TableauBornesRacinesPR == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines dans couple Z.\n");
+            free(globalesPr);
             return 0;
             }
             instancierTableau(TableauBornesRacinesPR,6);
             Tableau *TableauRacinesPR = (Tableau*)malloc(sizeof(Tableau));
             if (TableauRacinesPR == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauRacines dans couple Z.\n");
+            free(globalesPr);
+            free(TableauBornesRacinesPR->donnees);
+            free(TableauBornesRacinesPR);
             return 0;
             }
             instancierTableau(TableauRacinesPR,3);
@@ -129,6 +136,7 @@ do
             free(TableauRacinesPR->donnees);
             free(TableauBornesRacinesPR);
             free(TableauRacinesPR);
+            free(globalesPr);
             printf("\n");
             printf("Pour continuer, appuyez sur entrer...");
             getchar();
@@ -161,7 +169,7 @@ do
         case 5:
             varPR *globalesHVap = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et hVapEOS.c. La structure en question est définie dans utilitaires.h
             if (globalesHVap == NULL) {
-            printf("Erreur d'allocation mémoire -> main, allocation globalesPr.\n");
+            printf("Erreur d'allocation mémoire -> main, allocation globalesHVap.\n");
             return 0;
             }
             globalesHVap->T1 = 173;           // Valeur par défaut.
@@ -189,6 +197,57 @@ do
             free(TableauRacinesHVap->donnees);
             free(TableauBornesRacinesHVap);
             free(TableauRacinesHVap);
+            free(globalesHVap);
+            printf("\n");
+            printf("Pour continuer, appuyez sur entrer...");
+            getchar();
+            getchar();
+            break;
+        case 6:
+            double *masseMolaire = (double*)malloc(sizeof(double));
+            if (masseMolaire==NULL){
+                printf("Erreur d'allocation mémoire -> main, allocation de masseMolaire pour le cas n°6 \n");
+                return 0;
+            }
+            *masseMolaire = (double)30/1000; // /1000 car on veut des kg.mol^-1 pour fonctionner en S.I. Je cast (double) sur le numérateur pour forcer la division à ne pas être entière. (autrement le résultat =0)
+            varPR *globalesRho = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et masseVolumique.c. La structure en question est définie dans utilitaires.h
+            if (globalesRho == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation globalesRho.\n");
+            return 0;
+            }
+            globalesRho->T1 = 173;           // Valeur par défaut.
+            globalesRho->P1 = 0.5271*pow(10,5);        // Valeur par défaut. (provient de la question sur pVap), je multiplie par 10^5 pour avoir des Pa et être en unité S.I.
+            globalesRho->Tc = 305.4;         // Valeur par défaut.
+            globalesRho->Pc = 48.8*pow(10,5);          // Valeur par défaut. je multiplie par 10^5 pour avoir des Pa et être en unité S.I.
+            globalesRho->Omega_A = 0.457236; // Valeur par défaut.
+            globalesRho->Omega_B = 0.077796; // Valeur par défaut.
+            globalesRho->acentric = 0.099;   // Valeur par défaut.
+            menuDefautRho(globalesRho, *masseMolaire); // L'astérisque est importante car on fournit un double et pas un pointeur sur double (l'* permet d'accèder à la valeur)
+            Tableau *TableauBornesRacinesRho = (Tableau*)malloc(sizeof(Tableau));
+            if (TableauBornesRacinesRho == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines dans HVapEOS.\n");
+            free(globalesRho);
+            free(masseMolaire);
+            return 0;
+            }
+            instancierTableau(TableauBornesRacinesRho,6);
+            Tableau *TableauRacinesRho = (Tableau*)malloc(sizeof(Tableau));
+            if (TableauRacinesRho == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation TableauRacines dans HVapEOS.\n");
+            free(globalesRho);
+            free(masseMolaire);
+            free(TableauBornesRacinesRho->donnees);
+            free(TableauBornesRacinesRho);
+            return 0;
+            }
+            instancierTableau(TableauRacinesRho,3);
+            printf("Masse volumique à T = %.2f K et P = %.2f vaut %.2f kg/mol",globalesRho->T1,globalesRho->P1,trouveRhoLiq(globalesRho, TableauBornesRacinesRho,TableauRacinesRho,*masseMolaire)); // L'astérisque est importante car on fournit un double et pas un pointeur sur double (l'* permet d'accèder à la valeur)
+            free(TableauBornesRacinesRho->donnees);
+            free(TableauRacinesRho->donnees);
+            free(TableauBornesRacinesRho);
+            free(TableauRacinesRho);
+            free(masseMolaire);
+            free(globalesRho);
             printf("\n");
             printf("Pour continuer, appuyez sur entrer...");
             getchar();

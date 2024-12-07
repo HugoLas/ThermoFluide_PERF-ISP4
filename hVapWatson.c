@@ -74,6 +74,7 @@ while (choixMenu != 0)
             break;
         default:
             printf("Numéro de valeur non reconnue. \n" );
+            break;
     }
     printf("Pour changer une autre valeur, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
     printf("--> ");
