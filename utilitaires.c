@@ -116,6 +116,7 @@ void menuDefautPvap(varPR *globales)
         printf("--> ");
         scanf("%d", &choixMenu);
     }
+    return;
 }
 
 void menuDefautValeursZ(varPR *globales)
@@ -193,6 +194,7 @@ void menuDefautValeursZ(varPR *globales)
         printf("--> ");
         scanf("%d", &choixMenu);
     }
+    return;
 }
 
 void lectureAsciiArt(char *str){
@@ -211,4 +213,29 @@ void lectureAsciiArt(char *str){
     }
     fclose(file);
     return;
+}
+
+double integraleCp(double borneInf, double borneSup, double pasIntegration, double (*ptrFonction)(double,cpStruct*),cpStruct* cpCoeffs){ // On récupère comme paramètre la fonction à intégrer à travers son pointeur.
+    double a, b;                                // Bornes des "sous-intégrales" pour chaque morceau d'intervalle
+    double aire=0;                              // Aire sous la fonction
+    int compteur = 0;
+    int maxIter = 1000000000;                   // Pour éviter une boucle infinie, je la limite à 1 milliard d'itérations
+    a = borneInf;                               // Initialisation de la première sous integrale au début de l'intervalle
+    b = a+pasIntegration;                       // Initialisation de la première sous integrale
+    while (b<borneSup && compteur < maxIter)
+    {
+        if ((borneSup-b)>=pasIntegration)       // Il reste au moins un pas à parcourir
+        {
+            aire = aire + ((b-a)/6)*(ptrFonction(a,cpCoeffs) + 4*(ptrFonction(((a+b)/2),cpCoeffs)) + ptrFonction(b,cpCoeffs));
+            a=b;                                // On progresse dans l'intervalle
+            b=a+pasIntegration;                 // On progresse dans l'intervalle
+        }
+        else{
+            b = borneSup;                       // On évite de dépasser de l'intervalle
+            aire = aire + ((b-a)/6)*(ptrFonction(a,cpCoeffs) + 4*(ptrFonction(((a+b)/2),cpCoeffs)) + ptrFonction(b,cpCoeffs));
+            a=borneSup;                         // On a atteint le bout de l'intervalle -> a = borneSup
+        }
+        compteur=compteur+1;
+    }
+    return aire;
 }

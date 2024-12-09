@@ -220,7 +220,7 @@ void NewtonRaphson(Tableau *tabResult, Tableau *tabIntervalles, double ecartZero
             x1=-1;
         }
         
-        tabResult->donnees[tabResult->taille]=x1;
+        tabResult->donnees[tabResult->taille]=x1; // Au futur lecteur de ce code : Non, ça ne doit pas être tabResult->donnees[tabResult->taille-1]. Regarde plus haut, j'ai fait commencer la taille à 0 (au lieu du standard =1)
         //printf("Racine %i = %f \n",tabResult->taille+1, tabResult->donnees[tabResult->taille]);
         tabResult->taille=tabResult->taille+1;
     }

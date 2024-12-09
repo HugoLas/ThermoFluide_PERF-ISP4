@@ -45,6 +45,13 @@ typedef struct{
     double pressionCritic;
 }   watsonStruct;
 
+typedef struct{
+    double a;
+    double b;
+    double c;
+    double d;
+} cpStruct;
+
 /* Déclaration des fonctions*/
 double valeurMax(Tableau *tab);
 double valeurMin(Tableau *tab);
@@ -52,4 +59,4 @@ void instancierTableau(Tableau *tab, int taille);
 void menuDefautPvap(varPR* globales);
 void menuDefautValeursZ(varPR* globales);
 void lectureAsciiArt(char *str);
-
+double integraleCp(double borneInf, double borneSup, double pasIntegration, double (*ptrFonction)(double, cpStruct*),cpStruct* cpCoeffs); // Utilise la méthode de Simpson (Très précise pour intégrer des polynomes, ici on s'en servira pour intégrer des capacités calo)

@@ -40,7 +40,7 @@ void menuDefautRho(varPR* globales, double grandM){
         switch(choixMenu) {
             case 1:
                 printf("T1 = " );
-                scanf("%lf", &globales->T1); //%lf spécifie que l'on attend un double, & spécifie à quelle variable attribuer la valeur.
+                scanf("%lf", &globales->T1); //%lf spécifie que l'on attend un double, & sert à récupérer l'adresse de T1
                 printf("\n");
                 break;
             case 2:
@@ -49,7 +49,7 @@ void menuDefautRho(varPR* globales, double grandM){
                 break;
             case 3:
                 printf("M = ");
-                scanf("%lf", &grandM); // "&" car on fournit la valeur sur laquelle le pointeur pointe (j'ai bien mis une '*' devant grandM dans l'appel de la fonction)
+                scanf("%lf", &grandM); // "&" car on fournit la valeur sur laquelle le pointeur pointe (j'ai bien mis une '*' devant grandM dans l'appel de la fonction). Ici on veut son adresse.
                 printf("\n");
                 break;
             case 4:
