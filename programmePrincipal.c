@@ -13,6 +13,7 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 #include "hVapWatson.h"
 #include "hVapEOS.h"
 #include "masseVolumique.h"
+#include "entropie.h"
 
 
 int main(){
@@ -32,6 +33,7 @@ do
     printf("(5) L'enthalpie de vaporisation pour un couple température/pression donné. (Equation d'état, Peng-Robinson) \n");
     printf("(6) La masse volumique d'un liquide pour un couple température/pression donné. (Equation d'état, Peng-Robinson) \n");
     printf("(7) La différence d'enthalpie entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
+    printf("(8) La différence d'entropie entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
     printf("(0) Pour quitter\n");
     printf("\n");
 
@@ -401,6 +403,134 @@ do
             free(TableauRacinesDH_2->donnees);
             free(TableauRacinesDH_2);
             free(cpCoeffs);
+            printf("\n");
+            printf("Pour continuer, appuyez sur entrer...");
+            getchar();
+            getchar();
+            break;
+
+        case 8:
+            varPR *globalesDeltaS_1 = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et entropie. La structure en question est définie dans utilitaires.h
+            if (globalesDeltaS_1 == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation globalesDeltaS_1.\n");
+            return 0;
+            }
+            
+            globalesDeltaS_1->T1 = 173;           // Valeur par défaut.
+            globalesDeltaS_1->P1 = 0.5271;        // Valeur par défaut. (provient de la question sur pVap)
+            globalesDeltaS_1->Tc = 305.4;         // Valeur par défaut.
+            globalesDeltaS_1->Pc = 48.8;          // Valeur par défaut. 
+            globalesDeltaS_1->Omega_A = 0.457236; // Valeur par défaut.
+            globalesDeltaS_1->Omega_B = 0.077796; // Valeur par défaut.
+            globalesDeltaS_1->acentric = 0.099;   // Valeur par défaut.
+            printf("Vous allez maintenant renseigner les valeurs concernant le cas n°1... \n"); 
+            menuDefautValeursZ(globalesDeltaS_1);
+            
+            varPR *globalesDeltaS_2 = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et entropie.c. La structure en question est définie dans utilitaires.h
+            if (globalesDeltaS_2 == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation globalesDeltaS_2.\n");
+            free(globalesDeltaS_1);
+            return 0;
+            }
+            
+            globalesDeltaS_2->T1 = 293;                                 // Valeur par défaut. (provient de l'énoncé)
+            globalesDeltaS_2->P1 = 13.78;                               // Valeur par défaut. (provient de l'énoncé)
+            globalesDeltaS_2->Tc = globalesDeltaS_1->Tc;                // On veille à avoir les mêmes paramètres dans les deux cas car il s'agit du même produit.
+            globalesDeltaS_2->Pc = globalesDeltaS_1->Pc;                //
+            globalesDeltaS_2->Omega_A = globalesDeltaS_1->Omega_A;      //
+            globalesDeltaS_2->Omega_B = globalesDeltaS_1->Omega_B;      //
+            globalesDeltaS_2->acentric = globalesDeltaS_1->acentric;    //
+            printf("Vous allez maintenant renseigner les valeurs concernant le cas n°2... Ne pas modifier les valeurs autres que T1 et P1 car le produit ne change pas durant la transformation. Les changements seront annulés.\n"); 
+            menuDefautValeursZ(globalesDeltaS_2);
+            globalesDeltaS_2->Tc = globalesDeltaS_1->Tc;                // (J'écrase tout changement qui aurait pu être fait uniquement durant le deuxième menu sur autre chose que P et T)
+            globalesDeltaS_2->Pc = globalesDeltaS_1->Pc;                //
+            globalesDeltaS_2->Omega_A = globalesDeltaS_1->Omega_A;      //
+            globalesDeltaS_2->Omega_B = globalesDeltaS_1->Omega_B;      //
+            globalesDeltaS_2->acentric = globalesDeltaS_1->acentric;    //
+
+            Tableau *TableauBornesRacinesDS_1 = (Tableau*)malloc(sizeof(Tableau));
+            if (TableauBornesRacinesDS_1 == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines1 dans main cas n°8.\n");
+            free(globalesDeltaS_1);
+            free(globalesDeltaS_2);
+            return 0;
+            }
+            instancierTableau(TableauBornesRacinesDS_1,6);
+
+            Tableau *TableauBornesRacinesDS_2 = (Tableau*)malloc(sizeof(Tableau));
+            if (TableauBornesRacinesDS_2 == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines2 dans main cas n°8.\n");
+            free(globalesDeltaS_1);
+            free(globalesDeltaS_2);
+            free(TableauBornesRacinesDS_1->donnees);
+            free(TableauBornesRacinesDS_1);
+            return 0;
+            }
+            instancierTableau(TableauBornesRacinesDS_2,6);
+            
+            Tableau *TableauRacinesDS_1 = (Tableau*)malloc(sizeof(Tableau));
+            if (TableauRacinesDS_1 == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation TableauRacines dans main cas n°8.\n");
+            free(globalesDeltaS_1);
+            free(globalesDeltaS_2);
+            free(TableauBornesRacinesDS_1->donnees);
+            free(TableauBornesRacinesDS_1);
+            free(TableauBornesRacinesDS_2->donnees);
+            free(TableauBornesRacinesDS_2);
+            return 0;
+            }
+            instancierTableau(TableauRacinesDS_1,3);
+
+            Tableau *TableauRacinesDS_2 = (Tableau*)malloc(sizeof(Tableau));
+            if (TableauRacinesDS_2 == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation TableauRacines2 main cas n°8.\n");
+            free(globalesDeltaS_1);
+            free(globalesDeltaS_2);
+            free(TableauBornesRacinesDS_1->donnees);
+            free(TableauBornesRacinesDS_1);
+            free(TableauBornesRacinesDS_2->donnees);
+            free(TableauBornesRacinesDS_2);
+            free(TableauRacinesDS_1->donnees);
+            free(TableauRacinesDS_1);
+            return 0;
+            }
+            instancierTableau(TableauRacinesDS_2,3);
+
+            cpStruct *cpCoeffsEntropie = (cpStruct*)malloc(sizeof(cpStruct)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et hVapEOS.c. La structure en question est définie dans utilitaires.h
+            if (cpCoeffsEntropie == NULL) {
+            printf("Erreur d'allocation mémoire -> main, allocation cpCoeffsEntropie cas n°8.\n");
+            free(globalesDeltaS_1);
+            free(globalesDeltaS_2);
+            free(TableauBornesRacinesDS_1->donnees);
+            free(TableauBornesRacinesDS_1);
+            free(TableauBornesRacinesDS_2->donnees);
+            free(TableauBornesRacinesDS_2);
+            free(TableauRacinesDS_1->donnees);
+            free(TableauRacinesDS_1);
+            free(TableauRacinesDS_2->donnees);
+            free(TableauRacinesDS_2);
+            return 0;
+            }
+            cpCoeffsEntropie->a =5.409; 
+            cpCoeffsEntropie->b =1.781*pow(10,-1);
+            cpCoeffsEntropie->c =-6.938*pow(10,-5);
+            cpCoeffsEntropie->d =8.713*pow(10,-9);
+
+            menuDefautCp(cpCoeffsEntropie);
+
+            printf("La différence d'entropie entre les deux états spécifiés vaut : %.2f J/mol/K \n",deltaEntropie(cpCoeffsEntropie,globalesDeltaS_1,globalesDeltaS_2,TableauBornesRacinesDS_1,TableauRacinesDS_1,TableauBornesRacinesDS_2,TableauRacinesDS_2));
+
+            free(globalesDeltaS_1);
+            free(globalesDeltaS_2);
+            free(TableauBornesRacinesDS_1->donnees);
+            free(TableauBornesRacinesDS_1);
+            free(TableauBornesRacinesDS_2->donnees);
+            free(TableauBornesRacinesDS_2);
+            free(TableauRacinesDS_1->donnees);
+            free(TableauRacinesDS_1);
+            free(TableauRacinesDS_2->donnees);
+            free(TableauRacinesDS_2);
+            free(cpCoeffsEntropie);
             printf("\n");
             printf("Pour continuer, appuyez sur entrer...");
             getchar();

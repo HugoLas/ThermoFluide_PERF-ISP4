@@ -9,10 +9,10 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 #include <stdlib.h> // Permet l'allocation dynamique de mémoire
 #include <stdio.h>
 #include "PR.h"
+#include "hVapEOS.h"
 #include "utilitaires.h"
 
-double hVapValue(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines);
-double hMinusHStar(varPR* globales, double z);
-double fonctionCpVap(double T, cpStruct *cpCoeffs);
-void menuDefautCp(cpStruct *cpCoeffs);
-double deltaHSinglePhase(cpStruct* cpCoeffs, varPR* globales1, varPR* globales2, Tableau* TabBornesRacines1, Tableau* TabRacines1, Tableau* TabBornesRacines2, Tableau* TabRacines2);
+double sMinusSStar(varPR* globales, double z);
+double fonctionCpVapSurT(double T, cpStruct *cpCoeffs);
+double deltaSGP(cpStruct* cpCoeffs, varPR* globales1, varPR* globales2);
+double deltaEntropie(cpStruct* cpCoeffs, varPR* globales1, varPR* globales2, Tableau* TabBornesRacines1, Tableau* TabRacines1, Tableau* TabBornesRacines2, Tableau* TabRacines2);
