@@ -5,8 +5,9 @@
 /* Ces librairies donnent accès à des fonctions déjà programmées par des gens talentueux
 et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) */
 
-#include <math.h>   // Permet d'effectuer des calculs
-#include <stdlib.h> // Permet l'allocation dynamic de mémoire
+#include <math.h>       // Permet d'effectuer des calculs
+#include <stdlib.h>     // Permet l'allocation dynamic de mémoire
+#include <stdbool.h>    // Permet l'utilisation des booleans
 #include <stdio.h>
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~ Déclaration des structures ~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -58,5 +59,9 @@ double valeurMin(Tableau *tab);
 void instancierTableau(Tableau *tab, int taille);
 void menuDefautPvap(varPR* globales);
 void menuDefautValeursZ(varPR* globales);
+void menuDefautT2P2(varPR *globales, bool SI); // Saisir true pour SI dans le cas où les valeurs sont données en SI.
 void lectureAsciiArt(char *str);
 double integraleCp(double borneInf, double borneSup, double pasIntegration, double (*ptrFonction)(double, cpStruct*),cpStruct* cpCoeffs); // Utilise la méthode de Simpson (Très précise pour intégrer des polynomes, ici on s'en servira pour intégrer des capacités calo)
+Tableau* creerTableauInt(int taille, char* localisation);
+varPR* creerGlobales(char* localisation);
+void defautsGlobalesEthane(varPR* globales,double T, double P, bool SI);

@@ -13,3 +13,5 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 
 double trouveRhoLiq(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines, double grandM);
 void menuDefautRho(varPR* globales, double grandM);
+double volumeMolaire(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines, int phase);
+double deltaV(varPR* globales1, Tableau* TabBornesRacines1, Tableau* TabRacines1, varPR* globales2, Tableau* TabBornesRacines2, Tableau* TabRacines2);

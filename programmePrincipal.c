@@ -34,6 +34,7 @@ do
     printf("(6) La masse volumique d'un liquide pour un couple température/pression donné. (Equation d'état, Peng-Robinson) \n");
     printf("(7) La différence d'enthalpie entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
     printf("(8) La différence d'entropie entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
+    printf("(9) La différence de volume molaire entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
     printf("(0) Pour quitter\n");
     printf("\n");
 
@@ -78,7 +79,6 @@ do
             antoineStruct *coefficientsAntoine = (antoineStruct*)malloc(sizeof(antoineStruct));
             if (coefficientsAntoine == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation coefficientsAntoine.\n");
-            free(temperatureAntoine);
             return 0;
             }
             menuDefautAntoine(coefficientsAntoine);
@@ -116,7 +116,6 @@ do
             Tableau *TableauBornesRacinesPR = (Tableau*)malloc(sizeof(Tableau));
             if (TableauBornesRacinesPR == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines dans couple Z.\n");
-            free(globalesPr);
             return 0;
             }
             instancierTableau(TableauBornesRacinesPR,6);
@@ -124,9 +123,6 @@ do
             Tableau *TableauRacinesPR = (Tableau*)malloc(sizeof(Tableau));
             if (TableauRacinesPR == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauRacines dans couple Z.\n");
-            free(globalesPr);
-            free(TableauBornesRacinesPR->donnees);
-            free(TableauBornesRacinesPR);
             return 0;
             }
             instancierTableau(TableauRacinesPR,3);
@@ -251,8 +247,6 @@ do
             Tableau *TableauBornesRacinesRho = (Tableau*)malloc(sizeof(Tableau));
             if (TableauBornesRacinesRho == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines dans HVapEOS.\n");
-            free(globalesRho);
-            free(masseMolaire);
             return 0;
             }
             instancierTableau(TableauBornesRacinesRho,6);
@@ -260,10 +254,6 @@ do
             Tableau *TableauRacinesRho = (Tableau*)malloc(sizeof(Tableau));
             if (TableauRacinesRho == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauRacines dans HVapEOS.\n");
-            free(globalesRho);
-            free(masseMolaire);
-            free(TableauBornesRacinesRho->donnees);
-            free(TableauBornesRacinesRho);
             return 0;
             }
             instancierTableau(TableauRacinesRho,3);
@@ -301,7 +291,6 @@ do
             varPR *globalesDeltaH_2 = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et hVapEOS.c. La structure en question est définie dans utilitaires.h
             if (globalesDeltaH_2 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation globalesDeltaH_2.\n");
-            free(globalesDeltaH_1);
             return 0;
             }
             
@@ -323,8 +312,6 @@ do
             Tableau *TableauBornesRacinesDH_1 = (Tableau*)malloc(sizeof(Tableau));
             if (TableauBornesRacinesDH_1 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines1 dans main cas n°7.\n");
-            free(globalesDeltaH_1);
-            free(globalesDeltaH_2);
             return 0;
             }
             instancierTableau(TableauBornesRacinesDH_1,6);
@@ -332,10 +319,6 @@ do
             Tableau *TableauBornesRacinesDH_2 = (Tableau*)malloc(sizeof(Tableau));
             if (TableauBornesRacinesDH_2 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines2 dans main cas n°7.\n");
-            free(globalesDeltaH_1);
-            free(globalesDeltaH_2);
-            free(TableauBornesRacinesDH_1->donnees);
-            free(TableauBornesRacinesDH_1);
             return 0;
             }
             instancierTableau(TableauBornesRacinesDH_2,6);
@@ -343,12 +326,6 @@ do
             Tableau *TableauRacinesDH_1 = (Tableau*)malloc(sizeof(Tableau));
             if (TableauRacinesDH_1 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauRacines dans main cas n°7.\n");
-            free(globalesDeltaH_1);
-            free(globalesDeltaH_2);
-            free(TableauBornesRacinesDH_1->donnees);
-            free(TableauBornesRacinesDH_1);
-            free(TableauBornesRacinesDH_2->donnees);
-            free(TableauBornesRacinesDH_2);
             return 0;
             }
             instancierTableau(TableauRacinesDH_1,3);
@@ -356,14 +333,6 @@ do
             Tableau *TableauRacinesDH_2 = (Tableau*)malloc(sizeof(Tableau));
             if (TableauRacinesDH_2 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauRacines2 main cas n°7.\n");
-            free(globalesDeltaH_1);
-            free(globalesDeltaH_2);
-            free(TableauBornesRacinesDH_1->donnees);
-            free(TableauBornesRacinesDH_1);
-            free(TableauBornesRacinesDH_2->donnees);
-            free(TableauBornesRacinesDH_2);
-            free(TableauRacinesDH_1->donnees);
-            free(TableauRacinesDH_1);
             return 0;
             }
             instancierTableau(TableauRacinesDH_2,3);
@@ -371,16 +340,6 @@ do
             cpStruct *cpCoeffs = (cpStruct*)malloc(sizeof(cpStruct)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et hVapEOS.c. La structure en question est définie dans utilitaires.h
             if (cpCoeffs == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation cpCoeffs cas n°7.\n");
-            free(globalesDeltaH_1);
-            free(globalesDeltaH_2);
-            free(TableauBornesRacinesDH_1->donnees);
-            free(TableauBornesRacinesDH_1);
-            free(TableauBornesRacinesDH_2->donnees);
-            free(TableauBornesRacinesDH_2);
-            free(TableauRacinesDH_1->donnees);
-            free(TableauRacinesDH_1);
-            free(TableauRacinesDH_2->donnees);
-            free(TableauRacinesDH_2);
             return 0;
             }
             cpCoeffs->a =5.409; 
@@ -429,7 +388,6 @@ do
             varPR *globalesDeltaS_2 = (varPR*)malloc(sizeof(varPR)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et entropie.c. La structure en question est définie dans utilitaires.h
             if (globalesDeltaS_2 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation globalesDeltaS_2.\n");
-            free(globalesDeltaS_1);
             return 0;
             }
             
@@ -451,8 +409,6 @@ do
             Tableau *TableauBornesRacinesDS_1 = (Tableau*)malloc(sizeof(Tableau));
             if (TableauBornesRacinesDS_1 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines1 dans main cas n°8.\n");
-            free(globalesDeltaS_1);
-            free(globalesDeltaS_2);
             return 0;
             }
             instancierTableau(TableauBornesRacinesDS_1,6);
@@ -460,10 +416,6 @@ do
             Tableau *TableauBornesRacinesDS_2 = (Tableau*)malloc(sizeof(Tableau));
             if (TableauBornesRacinesDS_2 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauBornesRacines2 dans main cas n°8.\n");
-            free(globalesDeltaS_1);
-            free(globalesDeltaS_2);
-            free(TableauBornesRacinesDS_1->donnees);
-            free(TableauBornesRacinesDS_1);
             return 0;
             }
             instancierTableau(TableauBornesRacinesDS_2,6);
@@ -471,12 +423,6 @@ do
             Tableau *TableauRacinesDS_1 = (Tableau*)malloc(sizeof(Tableau));
             if (TableauRacinesDS_1 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauRacines dans main cas n°8.\n");
-            free(globalesDeltaS_1);
-            free(globalesDeltaS_2);
-            free(TableauBornesRacinesDS_1->donnees);
-            free(TableauBornesRacinesDS_1);
-            free(TableauBornesRacinesDS_2->donnees);
-            free(TableauBornesRacinesDS_2);
             return 0;
             }
             instancierTableau(TableauRacinesDS_1,3);
@@ -484,14 +430,6 @@ do
             Tableau *TableauRacinesDS_2 = (Tableau*)malloc(sizeof(Tableau));
             if (TableauRacinesDS_2 == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation TableauRacines2 main cas n°8.\n");
-            free(globalesDeltaS_1);
-            free(globalesDeltaS_2);
-            free(TableauBornesRacinesDS_1->donnees);
-            free(TableauBornesRacinesDS_1);
-            free(TableauBornesRacinesDS_2->donnees);
-            free(TableauBornesRacinesDS_2);
-            free(TableauRacinesDS_1->donnees);
-            free(TableauRacinesDS_1);
             return 0;
             }
             instancierTableau(TableauRacinesDS_2,3);
@@ -499,16 +437,6 @@ do
             cpStruct *cpCoeffsEntropie = (cpStruct*)malloc(sizeof(cpStruct)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et hVapEOS.c. La structure en question est définie dans utilitaires.h
             if (cpCoeffsEntropie == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation cpCoeffsEntropie cas n°8.\n");
-            free(globalesDeltaS_1);
-            free(globalesDeltaS_2);
-            free(TableauBornesRacinesDS_1->donnees);
-            free(TableauBornesRacinesDS_1);
-            free(TableauBornesRacinesDS_2->donnees);
-            free(TableauBornesRacinesDS_2);
-            free(TableauRacinesDS_1->donnees);
-            free(TableauRacinesDS_1);
-            free(TableauRacinesDS_2->donnees);
-            free(TableauRacinesDS_2);
             return 0;
             }
             cpCoeffsEntropie->a =5.409; 
@@ -531,6 +459,38 @@ do
             free(TableauRacinesDS_2->donnees);
             free(TableauRacinesDS_2);
             free(cpCoeffsEntropie);
+            printf("\n");
+            printf("Pour continuer, appuyez sur entrer...");
+            getchar();
+            getchar();
+            break;
+        case 9:
+            varPR *globalesDeltaV_1, *globalesDeltaV_2;
+            Tableau *TableauBornesRacinesDV_1, *TableauBornesRacinesDV_2;
+            Tableau *TableauRacinesDV_1, *TableauRacinesDV_2;
+            globalesDeltaV_1 = creerGlobales("Prog principal -> cas n°9, globalesDeltaV_1");
+            globalesDeltaV_2 = creerGlobales("Prog principal -> cas n°9, globalesDeltaV_2");
+            defautsGlobalesEthane(globalesDeltaV_1, 173, 0.5271, true); // Par le true, je signale que je souhaite une conversion en SI.
+            defautsGlobalesEthane(globalesDeltaV_2, 293, 13.78, true);
+            menuDefautValeursZ(globalesDeltaV_1);
+            menuDefautT2P2(globalesDeltaV_2,true);
+
+            TableauBornesRacinesDV_1 = creerTableauInt(6,"Prog principal -> cas n°9, TableauBornesRacinesDV_1");
+            TableauBornesRacinesDV_2 = creerTableauInt(6,"Prog principal -> cas n°9, TableauBornesRacinesDV_2");
+            TableauRacinesDV_1 = creerTableauInt(3,"Prog principal -> cas n°9, TableauRacinesDV_1");
+            TableauRacinesDV_2 = creerTableauInt(3,"Prog principal -> cas n°9, TableauRacinesDV_2");
+
+            printf("La différence de volume molaire entre les deux états spécifiés vaut : %.5f m^3/mol \n",deltaV(globalesDeltaV_1, TableauBornesRacinesDV_1, TableauRacinesDV_1, globalesDeltaV_2, TableauBornesRacinesDV_2, TableauRacinesDV_2));
+            free(globalesDeltaV_1);
+            free(globalesDeltaV_2);
+            free(TableauBornesRacinesDV_1->donnees);
+            free(TableauBornesRacinesDV_1);
+            free(TableauBornesRacinesDV_2->donnees);
+            free(TableauBornesRacinesDV_2);
+            free(TableauRacinesDV_1->donnees);
+            free(TableauRacinesDV_1);
+            free(TableauRacinesDV_2->donnees);
+            free(TableauRacinesDV_2);
             printf("\n");
             printf("Pour continuer, appuyez sur entrer...");
             getchar();

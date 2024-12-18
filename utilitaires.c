@@ -123,7 +123,7 @@ void menuDefautValeursZ(varPR *globales)
 {
     int choixMenu;
 
-    printf("Recherche des valeurs de facteur de compressibilité pour un couple [T;C]. Les valeurs par défaut sont : \n");
+    printf("Recherche des valeurs de facteur de compressibilité pour un couple [T;P]. Les valeurs par défaut sont : \n");
     printf("\n");
 
     printf("(1) T1 = %.3f K \n", globales->T1);
@@ -238,4 +238,93 @@ double integraleCp(double borneInf, double borneSup, double pasIntegration, doub
         compteur=compteur+1;
     }
     return aire;
+}
+
+Tableau* creerTableauInt(int taille, char* localisation){ // Localisation permet de rentrer un string qui sera print comme localisation de l'erreur si celle-ci est rencontrée
+Tableau *Tab= (Tableau*)malloc(sizeof(Tableau));
+if (Tab == NULL) {
+    printf("Erreur d'allocation mémoire -> %s \n"); // %s prend un pointeur vers char (un string donc)
+    instancierTableau(Tab,0);                       // Si erreur, alors je signale grace à taille = 0
+}
+else
+{
+    instancierTableau(Tab,taille);
+}
+return Tab;
+}
+
+varPR* creerGlobales(char* localisation){ // Localisation permet de rentrer un string qui sera print comme localisation de l'erreur si celle-ci est rencontrée
+varPR *globales= (varPR*)malloc(sizeof(varPR));
+if (globales == NULL) {
+    printf("Erreur d'allocation mémoire -> %s \n"); // %s prend un pointeur vers char (un string donc)
+}
+return globales;
+}
+
+void defautsGlobalesEthane(varPR* globales, double T, double P, bool SI){
+    globales->T1 = T;           
+    globales->P1 = P;
+    globales->Tc = 305.4;         
+    globales->Pc = 48.8;           
+    globales->Omega_A = 0.457236; 
+    globales->Omega_B = 0.077796; 
+    globales->acentric = 0.099;
+    if (SI == true)
+    {
+        globales->P1 = P*pow(10,5);
+        globales->Pc = 48.8*pow(10,5);
+    }
+    return;
+}
+
+void menuDefautT2P2(varPR *globales, bool SI)
+{
+    int choixMenu;
+
+    printf("Veuillez renseigner les valeurs de [T2;P2]. Les valeurs par défaut sont : \n");
+    printf("\n");
+
+    printf("(1) T2 = %.3f K \n", globales->T1);         // Attention à la confusion possible, T2 ici est bien stocké dans globales->T1 (simplement, il y a un globale pour le couple 1, et un globale pour le couple 2)
+
+    if (SI == true)
+    {
+        printf("(2) P2 = %.3f bar \n", (globales->P1)*pow(10,-5));
+    }
+    else
+    {
+        printf("(2) P2 = %.3f bar \n", globales->P1);
+    }
+    
+    
+
+    printf("\n");
+
+    printf("Pour changer une de ces valeurs, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
+    printf("--> ");
+
+    scanf("%d", &choixMenu); // %d est le code qui indique que l'on souhaite un entier.
+    while (choixMenu != 0)
+    {
+        switch(choixMenu) {
+            case 1:
+                printf("T2 [K] = " );
+                scanf("%lf", &globales->T1); //%lf spécifie que l'on attend un double, & spécifie à quelle variable attribuer la valeur.
+                printf("\n");
+                break;
+            case 2:
+                printf("P2 [bar] = ");
+                scanf("%lf", &globales->P1);
+                break;
+            case 0:
+                printf("\n");
+                break;
+            default:
+                printf("Numéro de valeur non reconnue. \n" );
+                break;
+        }
+        printf("Pour changer une autre valeur, entrez le n° correspondant puis faites \"entrée\". Sinon, entrez 0. \n");
+        printf("--> ");
+        scanf("%d", &choixMenu);
+    }
+    return;
 }

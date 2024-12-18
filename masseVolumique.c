@@ -90,3 +90,53 @@ void menuDefautRho(varPR* globales, double grandM){
     }
 
 }
+
+double volumeMolaire(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines, int phase){
+    trouveZ(globales,TabBornesRacines,TabRacines);
+    if (phase == 1)                         // 1 -> phase liquide 
+    {
+        return((8.314*globales->T1*TabRacines->donnees[0])/globales->P1);
+    }
+    else if (TabRacines->taille == 1)       // taille == 1 + phase vapeur -> une seule racine, pas d'équilibre donc vapeur surchauffée. (ou liq sous refroidi mais on part du principe que l'utilisateur a bien choisi la phase)
+    {
+        //printf("taille == 1 + phase vapeur -> une seule racine \n");
+        //printf("TabRacines->donnees[0] = %.4f \n", TabRacines->donnees[0]);
+        return((8.314*globales->T1*TabRacines->donnees[0])/globales->P1);
+    }
+    else                                    // taille != 1 + phase vapeur -> 2 racines, il y a un équilibre liq vap. Dans ce cas, zvap est dans la seconde case. (la case n°1 car l'indexage démarre à 0)
+    {
+        //printf("taille != 1 + phase vapeur -> 2 racines \n");
+        //printf("TabRacines->donnees[1] = %.4f \n",TabRacines->donnees[1]);
+        return((8.314*globales->T1*TabRacines->donnees[1])/globales->P1);
+    }
+}
+
+double deltaV(varPR* globales1, Tableau* TabBornesRacines1, Tableau* TabRacines1, varPR* globales2, Tableau* TabBornesRacines2, Tableau* TabRacines2){
+    int choixPhase;
+    double v1, v2;
+    printf("Détermination de la différence de volume molaire d'une phase pour un changement de couple {P,T}. Avec quelle phase souhaitez-vous travailler ? \n");
+    printf("\n");
+
+    printf("(1) Phase liquide \n");
+
+    printf("(2) Phase gaz \n");
+    printf("\n");
+    printf("--> ");
+
+    scanf("%d", &choixPhase); // %d est le code qui indique que l'on souhaite un entier.
+    printf("\n");
+    
+    while ((choixPhase!=1) && (choixPhase!=2))
+    {
+        printf("Valeur non reconnue. Veuillez recommencer : \n");
+        printf("--> ");
+        scanf("%d", &choixPhase);
+        printf("\n");
+    }
+
+    v1 = volumeMolaire(globales1,TabBornesRacines1,TabRacines1,choixPhase);
+    //printf("v1 = %.8f \n", v1);
+    v2 = volumeMolaire(globales2,TabBornesRacines2,TabRacines2,choixPhase);
+    //printf("v2 = %.8f \n", v2);
+    return(v2-v1);
+}
