@@ -53,11 +53,30 @@ typedef struct{
     double d;
 } cpStruct;
 
+typedef struct{
+    double Bliq;
+    double Bvap;
+} BMelange;
+
+typedef struct{
+    double Aliq;
+    double Avap;
+} AMelange; // Identique à BMelange mais plus clair dans le programme d'en faire 2 structures distinctes
+
+typedef struct{
+    double x1;
+    double x2;
+    double y1;
+    double y2;
+} titresMelange;
+
+
 /* Déclaration des fonctions*/
 double valeurMax(Tableau *tab);
 double valeurMin(Tableau *tab);
 void instancierTableau(Tableau *tab, int taille);
 void menuDefautPvap(varPR* globales);
+void chargerProfilGlobales(varPR *globales);
 void menuDefautValeursZ(varPR* globales);
 void menuDefautT2P2(varPR *globales, bool SI); // Saisir true pour SI dans le cas où les valeurs sont données en SI.
 void lectureAsciiArt(char *str);
@@ -65,3 +84,4 @@ double integraleCp(double borneInf, double borneSup, double pasIntegration, doub
 Tableau* creerTableauInt(int taille, char* localisation);
 varPR* creerGlobales(char* localisation);
 void defautsGlobalesEthane(varPR* globales,double T, double P, bool SI);
+void defautsGlobalesHeptane(varPR* globales, double T, double P, bool SI);

@@ -15,6 +15,7 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 /* Déclare les fonctions avant main pour les signaler au compiler. */
 
 void trouveZ(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines);
+void trouveZMelange(AMelange* AMel, BMelange* BMel, Tableau* TabBornesRacines, Tableau* TabRacines, int phase); // int phase : 0 = liq, 1 = vap.
 double trouveA(varPR* globales);
 double trouveB(varPR* globales);
 double trouveAlpha(varPR* globales);

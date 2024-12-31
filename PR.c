@@ -10,14 +10,14 @@
 
 void trouveZ(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines){
 
-globales->Tr = globales->T1/globales->Tc;
-//printf("globales->Tr = %.5f \n", globales->Tr);
-
-globales->Pr = globales->P1/globales->Pc;
-//printf("globales->Pc = %.5f \n", globales->Pc);
-
-globales->alpha = trouveAlpha(globales);
-//printf("globales->alpha = %.5f \n", globales->alpha);
+// globales->Tr = globales->T1/globales->Tc;
+// //printf("globales->Tr = %.5f \n", globales->Tr);
+// 
+// globales->Pr = globales->P1/globales->Pc;
+// //printf("globales->Pc = %.5f \n", globales->Pc);
+// 
+// globales->alpha = trouveAlpha(globales);
+// //printf("globales->alpha = %.5f \n", globales->alpha);
 
 globales->A = trouveA(globales);
 //printf("globales->A = %.5f \n", globales->A);
@@ -47,6 +47,40 @@ if (TabRacines->taille == 1 && TabRacines->donnees[0] == -1000){ // Si Newton re
 
 };  
 
+void trouveZMelange(AMelange* AMel, BMelange* BMel, Tableau* TabBornesRacines, Tableau* TabRacines, int phase){ // int phase : 0 = liq, 1 = vap.
+varPR* globalesMelange = creerGlobales("PR.c -> trouveZMelange -> globalesMelange");
+if (phase == 0)
+{
+    globalesMelange->A=AMel->Aliq;
+    globalesMelange->B=BMel->Bliq;
+}
+else
+{
+    globalesMelange->A=AMel->Avap;
+    globalesMelange->B=BMel->Bvap;
+}
+
+PointsDepartNewton(TabBornesRacines,0.001,2,globalesMelange);
+NewtonRaphson(TabRacines,TabBornesRacines,0.00001,globalesMelange);
+
+if (TabRacines->taille == 1 && TabRacines->donnees[0] == -1000){ // Si Newton renvoie une erreur, je fais un tableau de deux cases et Zliq = Zvap = -1
+    printf("Erreur -> TabRacines->taille == 1 && TabRacines->donnees[0] == -1000 \n");
+    double *NouvTableauRacines = (double*)realloc(TabRacines->donnees,2 * sizeof(double)); 
+    
+    if (NouvTableauRacines != NULL) 
+    {
+        TabRacines->donnees = NouvTableauRacines; //Pas besoin de free quoique ce soit. Realloc a déjà libéré l'ancienne mémoire. Je crois que NouvTableauAbscisse demeure valable et est indispendable. En revanche, il n'y a bien qu'un seul espace mémoire d'alloué.
+        TabRacines->taille = 2;
+        TabRacines->donnees[0] = -1;
+        TabRacines->donnees[1] = -1;
+        //printf("TrouveZ : Newton pas de racines, Reallocation de la mémoire -> Zliq = Zvap = -1 -> [-1;-1] \n");
+    }
+    else{
+        printf("TrouveZ : Erreur de réallocation mémoire.\n");
+    }
+}
+
+};
 
 double trouveA(varPR* globales){
     double A;

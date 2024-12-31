@@ -119,11 +119,78 @@ void menuDefautPvap(varPR *globales)
     return;
 }
 
+void chargerProfilGlobales(varPR *globales){
+    int choixMenu, conversionBoolSI;
+    double T, P;
+    bool SI;
+
+    printf("Veuillez saisir une température en K, puis, faites \"entrée\".\n");
+    printf("--> ");
+    scanf("%lf", &T); // %lf est le code qui indique que l'on souhaite un double.
+    printf("Veuillez saisir une pression en bar, puis, faites \"entrée\".\n");
+    printf("--> ");
+    scanf("%lf", &P);
+    printf("Souhaitez-vous faire la conversion en SI ? 0 pour non, 1 pour oui. \n");
+    printf("--> ");
+    scanf("%d", &conversionBoolSI); //Scanf n'a pas de format specifier pour les bool, à la place, on force la conversion int -> bool.
+    SI = conversionBoolSI;
+
+    choixMenu = -1; // initialisation
+    printf("Plusieurs espèces et plusieurs plages de validité sont proposées.\n");
+    printf("\n");
+    printf("(1) Ethane \n");
+    printf("(2) n-Heptane\n");
+    printf("(0) Espèce customisée (Utilisateur devra rentrer les coefficients lui-même)\n");
+    printf("\n");
+    printf("Faites votre choix\n");
+    printf("--> ");
+    scanf("%d", &choixMenu); // %d est le code qui indique que l'on souhaite un entier.
+    while(choixMenu > 2 || choixMenu < 0) // choix en dehors de l'intervalle.
+    {
+        printf("Valeur non valide, recommencez.\n");
+        printf("--> ");
+        scanf("%d", &choixMenu);
+    }
+
+    switch(choixMenu) {
+        case 1:
+            defautsGlobalesEthane(globales,T,P,SI);
+            printf("Profil chargé.\n" );
+            printf("\n");
+            break;
+        case 2:
+            defautsGlobalesHeptane(globales,T,P,SI);
+            printf("Profil chargé.\n" );
+            printf("\n");
+            break;
+        default:
+            printf("Vous avez choisi espèce customisée. \n" );
+                globales->T1 = T;           
+                globales->P1 = P;
+                globales->Tc = 0;         
+                globales->Pc = 0;           
+                globales->Omega_A = 0.457236; 
+                globales->Omega_B = 0.077796; 
+                globales->acentric = 0;
+                if (SI == true)
+                {
+                    globales->P1 = P*pow(10,5);
+                    globales->Pc = 48.8*pow(10,5);
+                }
+                return;
+            printf("Profil chargé.\n" );
+            printf("\n");
+            break;
+    }
+
+
+}
+
 void menuDefautValeursZ(varPR *globales)
 {
     int choixMenu;
 
-    printf("Recherche des valeurs de facteur de compressibilité pour un couple [T;P]. Les valeurs par défaut sont : \n");
+    printf("Les valeurs par défaut sont : \n");
     printf("\n");
 
     printf("(1) T1 = %.3f K \n", globales->T1);
@@ -243,7 +310,7 @@ double integraleCp(double borneInf, double borneSup, double pasIntegration, doub
 Tableau* creerTableauInt(int taille, char* localisation){ // Localisation permet de rentrer un string qui sera print comme localisation de l'erreur si celle-ci est rencontrée
 Tableau *Tab= (Tableau*)malloc(sizeof(Tableau));
 if (Tab == NULL) {
-    printf("Erreur d'allocation mémoire -> %s \n"); // %s prend un pointeur vers char (un string donc)
+    printf("Erreur d'allocation mémoire -> %s \n", localisation); // %s prend un pointeur vers char (un string donc)
     instancierTableau(Tab,0);                       // Si erreur, alors je signale grace à taille = 0
 }
 else
@@ -256,7 +323,7 @@ return Tab;
 varPR* creerGlobales(char* localisation){ // Localisation permet de rentrer un string qui sera print comme localisation de l'erreur si celle-ci est rencontrée
 varPR *globales= (varPR*)malloc(sizeof(varPR));
 if (globales == NULL) {
-    printf("Erreur d'allocation mémoire -> %s \n"); // %s prend un pointeur vers char (un string donc)
+    printf("Erreur d'allocation mémoire -> %s \n", localisation); // %s prend un pointeur vers char (un string donc)
 }
 return globales;
 }
@@ -274,6 +341,32 @@ void defautsGlobalesEthane(varPR* globales, double T, double P, bool SI){
         globales->P1 = P*pow(10,5);
         globales->Pc = 48.8*pow(10,5);
     }
+    
+    globales->Tr = globales->T1/globales->Tc;
+    globales->Pr = globales->P1/globales->Pc;
+    //globales->alpha = trouveAlpha(globales);
+    
+    return;
+}
+
+void defautsGlobalesHeptane(varPR* globales, double T, double P, bool SI){
+    globales->T1 = T;           
+    globales->P1 = P;
+    globales->Tc = 540.3;         
+    globales->Pc = 27.4;           
+    globales->Omega_A = 0.457236; 
+    globales->Omega_B = 0.077796; 
+    globales->acentric = 0.349;
+    if (SI == true)
+    {
+        globales->P1 = P*pow(10,5);
+        globales->Pc = 48.8*pow(10,5);
+    }
+    
+    globales->Tr = globales->T1/globales->Tc;
+    globales->Pr = globales->P1/globales->Pc;
+    //globales->alpha = trouveAlpha(globales);
+    
     return;
 }
 
@@ -326,5 +419,8 @@ void menuDefautT2P2(varPR *globales, bool SI)
         printf("--> ");
         scanf("%d", &choixMenu);
     }
+    globales->Tr = globales->T1/globales->Tc;
+    globales->Pr = globales->P1/globales->Pc;
+    //globales->alpha = trouveAlpha(globales);
     return;
 }

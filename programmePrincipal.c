@@ -14,6 +14,7 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 #include "hVapEOS.h"
 #include "masseVolumique.h"
 #include "entropie.h"
+#include "melange.h"
 
 
 int main(){
@@ -30,11 +31,12 @@ do
     printf("(2) La pression de vapeur saturante pour une température ? (Formule d'Antoine) \n");
     printf("(3) Les valeurs de facteur de compressibilité (Z) pour une substance, pour une température ? (Peng-Robinson) \n");
     printf("(4) L'enthalpie de vaporisation pour une température donnée. (Corrélations de Riedel et de Watson) \n");
-    printf("(5) L'enthalpie de vaporisation pour un couple température/pression donné. (Equation d'état, Peng-Robinson) \n");
-    printf("(6) La masse volumique d'un liquide pour un couple température/pression donné. (Equation d'état, Peng-Robinson) \n");
+    printf("(5) L'enthalpie de vaporisation pour un couple {T,P} donné. (Equation d'état, Peng-Robinson) \n");
+    printf("(6) La masse volumique d'un liquide pour un couple {T,P} donné. (Equation d'état, Peng-Robinson) \n");
     printf("(7) La différence d'enthalpie entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
     printf("(8) La différence d'entropie entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
     printf("(9) La différence de volume molaire entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
+    printf("(10) La valeur des titres d'un mélange couple {T,P} donné \n");
     printf("(0) Pour quitter\n");
     printf("\n");
 
@@ -299,6 +301,7 @@ do
             getchar();
             getchar();
             break;
+
         case 9:
             varPR *globalesDeltaV_1, *globalesDeltaV_2;
             Tableau *TableauBornesRacinesDV_1, *TableauBornesRacinesDV_2;
@@ -326,6 +329,80 @@ do
             free(TableauRacinesDV_1);
             free(TableauRacinesDV_2->donnees);
             free(TableauRacinesDV_2);
+            printf("\n");
+            printf("Pour continuer, appuyez sur entrer...");
+            getchar();
+            getchar();
+            break;
+        case 10 :
+            varPR* globalesMelEspece1 = creerGlobales("programme principal -> cas n°10 -> globalesMelEspece1");
+            varPR* globalesMelEspece2 = creerGlobales("programme principal -> cas n°10 -> globalesMelEspece2");
+            
+            titresMelange* titres;
+
+            antoineStruct *coefficientsAntoineMelEspece1 = (antoineStruct*)malloc(sizeof(antoineStruct));
+            if (coefficientsAntoineMelEspece1 == NULL) {
+            printf("Erreur d'allocation mémoire -> programme principal -> cas n°10 -> coefficientsAntoineMelEspece1.\n");
+            return 0;
+            }
+            printf("Choix coefficients pour formule d'Antoine espèce 1 : \n");
+            menuDefautAntoine(coefficientsAntoineMelEspece1);
+            printf("\n");
+            
+            antoineStruct *coefficientsAntoineMelEspece2 = (antoineStruct*)malloc(sizeof(antoineStruct));
+            if (coefficientsAntoineMelEspece2 == NULL) {
+            printf("Erreur d'allocation mémoire -> programme principal -> cas n°10 -> coefficientsAntoineMelEspece2.\n");
+            return 0;
+            }
+            printf("Choix coefficients pour formule d'Antoine espèce 2 : \n");
+            menuDefautAntoine(coefficientsAntoineMelEspece2);
+            printf("\n");
+
+            double *coefficientInteractionBinaire = (double*)malloc(sizeof(double));
+            if (coefficientInteractionBinaire == NULL) {
+            printf("Erreur d'allocation mémoire -> programme principal -> cas n°10 -> coefficientInteractionBinaire \n");
+            return 0;
+            }
+            
+            // TODO : sécuriser la saisie en mettant une boucle en cas de mauvaise saisie
+            printf("Choix du coefficient d'interaction binaire : \n");
+            printf("--> ");
+            scanf("%lf", coefficientInteractionBinaire);
+
+            printf("Choix de l'espèce n°1... Les paramètres {T,P} choisis ici seront ceux utilisés pour le mélange. \n");
+            chargerProfilGlobales(globalesMelEspece1);
+            globalesMelEspece1->alpha = trouveAlpha(globalesMelEspece1); // Malheureusement impossible de calculer alpha dans chargerProfilGlobales car celui-ci est dans utilitaires, et utilitaire ne peut inclure PR.h.
+            printf("\n");
+
+            
+            printf("Choix de l'espèce n°2... \n");
+            chargerProfilGlobales(globalesMelEspece2);
+            globalesMelEspece2->alpha = trouveAlpha(globalesMelEspece2);
+            printf("\n");
+
+            printf("debugging : trouveB(globalesMelEspece1) = %.3f \n",trouveB(globalesMelEspece1));
+            printf("debugging : trouveB(globalesMelEspece2) = %.3f \n",trouveB(globalesMelEspece2));
+
+            globalesMelEspece2->P1 = globalesMelEspece1->P1;
+            globalesMelEspece2->Pr = globalesMelEspece2->P1/globalesMelEspece2->Pc;
+            globalesMelEspece2->T1 = globalesMelEspece1->T1;
+            globalesMelEspece2->Tr = globalesMelEspece2->T1/globalesMelEspece2->Tc; 
+            globalesMelEspece2->alpha = trouveAlpha(globalesMelEspece2); 
+
+            titres = trouveTitres(globalesMelEspece1,globalesMelEspece2,globalesMelEspece1->P1,globalesMelEspece1->T1,*coefficientInteractionBinaire,coefficientsAntoineMelEspece1,coefficientsAntoineMelEspece2,0.00001);
+
+            printf("x1 = %.3f \n",titres->x1);
+            printf("y1 = %.3f \n",titres->y1);
+            printf("x2 = %.3f \n",titres->x2);
+            printf("y2 = %.3f \n",titres->y2);
+
+            free(globalesMelEspece1);
+            free(globalesMelEspece2);
+            free(titres);
+            free(coefficientsAntoineMelEspece1);
+            free(coefficientsAntoineMelEspece2);
+            free(coefficientInteractionBinaire);
+
             printf("\n");
             printf("Pour continuer, appuyez sur entrer...");
             getchar();

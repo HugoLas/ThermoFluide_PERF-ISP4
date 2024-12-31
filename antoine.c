@@ -15,12 +15,13 @@ printf("\n");
 printf("(1) Ethane de 91.33 à 144.13K [NIST, Carruth and Kobayashi, 1973]\n");
 printf("(2) Ethane de 135.74 à 199.91K [NIST, Loomis and Walters, 1926]\n");
 printf("(3) Pentane de 268.8 à 341.37K [NIST, Osborn and Douslin, 1974]\n");
+printf("(4) n-Heptane de 185.29 à 295.6K [NIST, Carruth and Kobayashi, 1973]\n");
 printf("(0) Espèce customisée (Utilisateur devra rentrer les coefficients lui-même)\n");
 printf("\n");
 printf("Faites votre choix\n");
 printf("--> ");
 scanf("%d", &choixMenu); // %d est le code qui indique que l'on souhaite un entier.
-while(choixMenu > 3 || choixMenu < 0) // choix en dehors de l'intervalle.
+while(choixMenu > 4 || choixMenu < 0) // choix en dehors de l'intervalle.
 {
     printf("Valeur non valide, recommencez.\n");
     printf("--> ");
@@ -46,6 +47,13 @@ switch(choixMenu) {
         coeffs->A = 3.9892;
         coeffs->B = 1070.617;
         coeffs->C = -40.454;
+        printf("Profil chargé.\n" );
+        printf("\n");
+        break;
+    case 4:
+        coeffs->A = 4.81803;
+        coeffs->B = 1635.409;
+        coeffs->C = -27.338;
         printf("Profil chargé.\n" );
         printf("\n");
         break;
