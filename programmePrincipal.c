@@ -167,7 +167,7 @@ do
             menuDefautValeursZ(globalesHVap);
             Tableau *TableauBornesRacinesHVap = creerTableauInt(6,"Programme Principal -> cas n°5 -> TableauBornesRacinesHVap");
             Tableau *TableauRacinesHVap = creerTableauInt(3,"Programme Principal -> cas n°5 -> TableauRacinesHVap");
-
+            globalesHVap->alpha = trouveAlpha(globalesHVap);            
             printf("Enthalpie de vaporisation à T = %.2f K vaut %.6f J/mol",globalesHVap->T1,hVapValue(globalesHVap, TableauBornesRacinesHVap,TableauRacinesHVap));
             
             free(TableauBornesRacinesHVap->donnees);
@@ -217,8 +217,9 @@ do
             printf("Vous allez maintenant renseigner les valeurs concernant le cas n°2... \n");
             varPR *globalesDeltaH_2 = creerGlobales("Programme Principal -> cas n°7 -> globalesDeltaH_2");
             defautsGlobalesEthane(globalesDeltaH_2,293,13.78,false);
-            menuDefautT2P2(globalesDeltaH_2,false);            
-
+            menuDefautT2P2(globalesDeltaH_2,false);
+            globalesDeltaH_2->alpha = trouveAlpha(globalesDeltaH_2);            
+            globalesDeltaH_1->alpha = trouveAlpha(globalesDeltaH_1);
             Tableau *TableauBornesRacinesDH_1 = creerTableauInt(6,"Programme Principal -> cas n°7 -> TableauBornesRacinesDH_1");
             Tableau *TableauBornesRacinesDH_2 = creerTableauInt(6,"Programme Principal -> cas n°7 -> TableauBornesRacinesDH_2");
             Tableau *TableauRacinesDH_1 = creerTableauInt(3,"Programme Principal -> cas n°7 -> TableauRacinesDH_1");
@@ -236,6 +237,8 @@ do
 
             menuDefautCp(cpCoeffs);
 
+            printf("Alpha1 = %.4f \n",globalesDeltaH_1);
+            printf("Alpha1 = %.4f \n",globalesDeltaH_1);
             printf("La différence d'enthalpie entre les deux états spécifiés vaut : %.2f kJ/mol \n",deltaHSinglePhase(cpCoeffs,globalesDeltaH_1,globalesDeltaH_2,TableauBornesRacinesDH_1,TableauRacinesDH_1,TableauBornesRacinesDH_2,TableauRacinesDH_2));
 
             free(globalesDeltaH_1);
