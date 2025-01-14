@@ -16,7 +16,7 @@ void trouveZ(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines){
 // globales->Pr = globales->P1/globales->Pc;
 // //printf("globales->Pc = %.5f \n", globales->Pc);
 // 
-// globales->alpha = trouveAlpha(globales);
+globales->alpha = trouveAlpha(globales);
 // //printf("globales->alpha = %.5f \n", globales->alpha);
 
 globales->A = trouveA(globales);
@@ -27,6 +27,8 @@ globales->B = trouveB(globales);
 
 PointsDepartNewton(TabBornesRacines,0.0,2,globales);
 NewtonRaphson(TabRacines,TabBornesRacines,0.00001,globales);
+//printf("Dans trouveZ tabRacines[0] = %.4f \n",TabRacines->donnees[0]);
+//printf("Dans trouveZ tabRacines[1] = %.4f \n",TabRacines->donnees[1]);
 
 if (TabRacines->taille == 1 && TabRacines->donnees[0] == -1000){ // Si Newton renvoie une erreur, je fais un tableau de deux cases et Zliq = Zvap = -1
     printf("Erreur -> TabRacines->taille == 1 && TabRacines->donnees[0] == -1000 \n");

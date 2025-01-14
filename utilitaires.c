@@ -177,12 +177,16 @@ void chargerProfilGlobales(varPR *globales){
                     globales->P1 = P*pow(10,5);
                     globales->Pc = 48.8*pow(10,5);
                 }
+                globales->Pr=globales->P1/globales->Pc;
+                globales->Tr=globales->T1/globales->Tc;
                 return;
             printf("Profil chargé.\n" );
             printf("\n");
             break;
     }
-
+    globales->Pr=globales->P1/globales->Pc;
+    globales->Tr=globales->T1/globales->Tc;
+    return;
 
 }
 
@@ -261,6 +265,8 @@ void menuDefautValeursZ(varPR *globales)
         printf("--> ");
         scanf("%d", &choixMenu);
     }
+    globales->Tr = globales->T1/globales->Tc;
+    globales->Pr = globales->P1/globales->Pc;
     return;
 }
 
@@ -342,8 +348,8 @@ void defautsGlobalesEthane(varPR* globales, double T, double P, bool SI){
         globales->Pc = 48.8*pow(10,5);
     }
     
-    globales->Tr = globales->T1/globales->Tc;
-    globales->Pr = globales->P1/globales->Pc;
+    //globales->Tr = globales->T1/globales->Tc;     --> deplacé dans menuDefautValeurZ qui peut modifier T et P et donc Tr et Pr. Pas de sens de le mettre ici. 
+    //globales->Pr = globales->P1/globales->Pc;     --> deplacé dans menuDefautValeurZ qui peut modifier T et P et donc Tr et Pr. Pas de sens de le mettre ici.
     //globales->alpha = trouveAlpha(globales);
     
     return;

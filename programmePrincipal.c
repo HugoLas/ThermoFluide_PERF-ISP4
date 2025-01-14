@@ -106,8 +106,10 @@ do
             varPR *globalesPr = creerGlobales("programme principal -> globalesPr dans cas n°3 \n");
             defautsGlobalesEthane(globalesPr,173,0.5271,false);
             menuDefautValeursZ(globalesPr);
+            printf("T = %.2f \n",globalesPr->T1);
             Tableau *TableauBornesRacinesPR = creerTableauInt(6,"Programme principal -> cas N°3 -> TableauBornesRacinesPR\n");
             Tableau *TableauRacinesPR = creerTableauInt(3, "Programme Principal -> cas n°3 -> Tableau TableauRacinesPR");
+            globalesPr->alpha = trouveAlpha(globalesPr); // TODO : Probablement inutile car réintégré à trouveZ
             trouveZ(globalesPr, TableauBornesRacinesPR, TableauRacinesPR);
             
             if (TableauRacinesPR->taille==1)
@@ -167,7 +169,7 @@ do
             menuDefautValeursZ(globalesHVap);
             Tableau *TableauBornesRacinesHVap = creerTableauInt(6,"Programme Principal -> cas n°5 -> TableauBornesRacinesHVap");
             Tableau *TableauRacinesHVap = creerTableauInt(3,"Programme Principal -> cas n°5 -> TableauRacinesHVap");
-            globalesHVap->alpha = trouveAlpha(globalesHVap);            
+            globalesHVap->alpha = trouveAlpha(globalesHVap); // TODO : Probablement inutile car réintégré à trouveZ         
             printf("Enthalpie de vaporisation à T = %.2f K vaut %.6f J/mol",globalesHVap->T1,hVapValue(globalesHVap, TableauBornesRacinesHVap,TableauRacinesHVap));
             
             free(TableauBornesRacinesHVap->donnees);
@@ -218,8 +220,8 @@ do
             varPR *globalesDeltaH_2 = creerGlobales("Programme Principal -> cas n°7 -> globalesDeltaH_2");
             defautsGlobalesEthane(globalesDeltaH_2,293,13.78,false);
             menuDefautT2P2(globalesDeltaH_2,false);
-            globalesDeltaH_2->alpha = trouveAlpha(globalesDeltaH_2);            
-            globalesDeltaH_1->alpha = trouveAlpha(globalesDeltaH_1);
+            globalesDeltaH_2->alpha = trouveAlpha(globalesDeltaH_2); // TODO : Probablement inutile car réintégré à trouveZ            
+            globalesDeltaH_1->alpha = trouveAlpha(globalesDeltaH_1); // TODO : Probablement inutile car réintégré à trouveZ
             Tableau *TableauBornesRacinesDH_1 = creerTableauInt(6,"Programme Principal -> cas n°7 -> TableauBornesRacinesDH_1");
             Tableau *TableauBornesRacinesDH_2 = creerTableauInt(6,"Programme Principal -> cas n°7 -> TableauBornesRacinesDH_2");
             Tableau *TableauRacinesDH_1 = creerTableauInt(3,"Programme Principal -> cas n°7 -> TableauRacinesDH_1");
@@ -237,8 +239,6 @@ do
 
             menuDefautCp(cpCoeffs);
 
-            printf("Alpha1 = %.4f \n",globalesDeltaH_1);
-            printf("Alpha1 = %.4f \n",globalesDeltaH_1);
             printf("La différence d'enthalpie entre les deux états spécifiés vaut : %.2f kJ/mol \n",deltaHSinglePhase(cpCoeffs,globalesDeltaH_1,globalesDeltaH_2,TableauBornesRacinesDH_1,TableauRacinesDH_1,TableauBornesRacinesDH_2,TableauRacinesDH_2));
 
             free(globalesDeltaH_1);
@@ -383,8 +383,8 @@ do
             globalesMelEspece2->alpha = trouveAlpha(globalesMelEspece2);
             printf("\n");
 
-            printf("debugging : trouveB(globalesMelEspece1) = %.3f \n",trouveB(globalesMelEspece1));
-            printf("debugging : trouveB(globalesMelEspece2) = %.3f \n",trouveB(globalesMelEspece2));
+            //printf("debugging : trouveB(globalesMelEspece1) = %.3f \n",trouveB(globalesMelEspece1));
+            //printf("debugging : trouveB(globalesMelEspece2) = %.3f \n",trouveB(globalesMelEspece2));
 
             globalesMelEspece2->P1 = globalesMelEspece1->P1;
             globalesMelEspece2->Pr = globalesMelEspece2->P1/globalesMelEspece2->Pc;

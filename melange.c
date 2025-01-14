@@ -19,10 +19,12 @@ AMelange* trouveAMelange(titresMelange* titre, varPR* globalesEspece1, varPR* gl
     if (AMel == NULL) {
         printf("Erreur d'allocation mémoire -> %s \n"); // %s prend un pointeur vers char (un string donc)
     }
-    
+    printf("globalesEspece1->Tr = %.3f \n",globalesEspece1->Tr);
+    printf("globalesEspece1->Pr = %.3f \n",globalesEspece1->Pr);
+    printf("globalesEspece2->Tr = %.3f \n",globalesEspece2->Tr);
+    printf("globalesEspece2->Pr = %.3f \n",globalesEspece2->Pr);
     double A1 = trouveA(globalesEspece1);
-    //printf("globalesEspece1->Tr = %.3f \n",globalesEspece1->Tr);
-    //printf("globalesEspece1->Pr = %.3f \n",globalesEspece1->Pr);
+    
     //printf("globalesEspece1->alpha = %.3f \n",globalesEspece1->alpha);
     printf("trouveA(globalesEspece1) = %.3f \n",trouveA(globalesEspece1));
     double A2 = trouveA(globalesEspece2);
@@ -126,57 +128,57 @@ titresMelange* trouveTitres(varPR* globaleEspece1, varPR* globaleEspece2, double
     //titre->y2 = 0;
     memset(titre, 0, sizeof(titresMelange)); // Initialise à 0 tous les titres pour que la condition d'entrée dans la boucle soit vraie.
     titresEnFonctionDeK(titreSuivant,K1,K2);
-    printf("Debugging, premiers titres : \n");
-    printf("x1 = %.3f \n",titreSuivant->x1);
-    printf("y1 = %.3f \n",titreSuivant->y1);
-    printf("x2 = %.3f \n",titreSuivant->x2);
-    printf("y2 = %.3f \n",titreSuivant->y2);
+    //printf("Debugging, premiers titres : \n");
+    //printf("x1 = %.3f \n",titreSuivant->x1);
+    //printf("y1 = %.3f \n",titreSuivant->y1);
+    //printf("x2 = %.3f \n",titreSuivant->x2);
+    //printf("y2 = %.3f \n",titreSuivant->y2);
 
-    printf("ecartMoyenTitres(titre, titreSuivant) = %.3f \n", ecartMoyenTitres(titre, titreSuivant));
-    printf("critere = %.3f \n", critere);
-    printf("%d \n", (ecartMoyenTitres(titre, titreSuivant) > critere) && (compteur < maxIter));
+    //printf("ecartMoyenTitres(titre, titreSuivant) = %.3f \n", ecartMoyenTitres(titre, titreSuivant));
+    //printf("critere = %.3f \n", critere);
+    //printf("%d \n", (ecartMoyenTitres(titre, titreSuivant) > critere) && (compteur < maxIter));
 
     while ((ecartMoyenTitres(titre, titreSuivant) > critere) && (compteur < maxIter))
     {
-        printf("entrée dans la boucle --------------------------------------------------------\n");
-        printf("ecartMoyenTitres(titre, titreSuivant) = %.3f \n", ecartMoyenTitres(titre, titreSuivant));
+        //printf("entrée dans la boucle --------------------------------------------------------\n");
+        //printf("ecartMoyenTitres(titre, titreSuivant) = %.3f \n", ecartMoyenTitres(titre, titreSuivant));
         actualiserTitres(titre,titreSuivant);
         AMel = trouveAMelange(titreSuivant, globaleEspece1, globaleEspece2, k12, "melange.c -> trouveTitres -> trouveAMelange");
         //printf("Calcul BMel : trouveBMelange(titreSuivant, globaleEspece1->B, globaleEspece2->B) \n");
         //printf("Calcul BMel : trouveBMelange(%.3f, %.3f, %.3f, %.3f) \n",titreSuivant->x1, titreSuivant->x2,trouveB(globaleEspece1), trouveB(globaleEspece2));
         BMel = trouveBMelange(titreSuivant, globaleEspece1, globaleEspece2, "melange.c -> trouveTitres -> trouveBMelange");
         trouveZMelange(AMel,BMel,TabBornesRacinesLiq,TabRacinesLiq,0);
-        printf("TabRacinesLiq->taille = %d \n",TabRacinesLiq->taille);
+        //printf("TabRacinesLiq->taille = %d \n",TabRacinesLiq->taille);
         trouveZMelange(AMel,BMel,TabBornesRacinesVap,TabRacinesVap,1);
-        printf("TabRacinesVap->taille = %d \n",TabRacinesVap->taille);
-        printf("ZliqMel = %.3f \n", valeurMin(TabRacinesLiq));
+        //printf("TabRacinesVap->taille = %d \n",TabRacinesVap->taille);
+        //printf("ZliqMel = %.3f \n", valeurMin(TabRacinesLiq));
         phi1Liq = trouvePhiMelange(globaleEspece1,valeurMin(TabRacinesLiq),trouveB(globaleEspece1),BMel->Bliq,AMel->Aliq,trouveA(globaleEspece1),trouveA(globaleEspece2),titre->x1,titre->x2,k12);
-        printf("phi1Liq = %.3f \n", phi1Liq);
-        printf("ZVapMel = %.3f \n", valeurMax(TabRacinesVap));
+        //printf("phi1Liq = %.3f \n", phi1Liq);
+        //printf("ZVapMel = %.3f \n", valeurMax(TabRacinesVap));
         phi1Vap = trouvePhiMelange(globaleEspece1,valeurMax(TabRacinesVap),trouveB(globaleEspece1),BMel->Bvap,AMel->Avap,trouveA(globaleEspece1),trouveA(globaleEspece2),titre->y1,titre->y2,k12);
-        printf("phi1Vap = %.3f \n", phi1Vap);
+        //printf("phi1Vap = %.3f \n", phi1Vap);
         phi2Liq = trouvePhiMelange(globaleEspece2,valeurMin(TabRacinesLiq),trouveB(globaleEspece2),BMel->Bliq,AMel->Aliq,trouveA(globaleEspece2),trouveA(globaleEspece1),titre->x2,titre->x1,k12);
-        printf("phi2Liq = %.3f \n", phi2Liq);
+        //printf("phi2Liq = %.3f \n", phi2Liq);
         phi2Vap = trouvePhiMelange(globaleEspece2,valeurMax(TabRacinesVap),trouveB(globaleEspece2),BMel->Bvap,AMel->Avap,trouveA(globaleEspece2),trouveA(globaleEspece1),titre->y2,titre->y1,k12);
-        printf("phi2Vap = %.3f \n", phi2Vap);
+        //printf("phi2Vap = %.3f \n", phi2Vap);
 
         K1 = phi1Liq/phi1Vap;
         K2 = phi2Liq/phi2Vap;
-        printf("K1 = %.3f \n", K1);
-        printf("K2 = %.3f \n", K2);
+        //printf("K1 = %.3f \n", K1);
+        //printf("K2 = %.3f \n", K2);
         titresEnFonctionDeK(titreSuivant,K1,K2);
         
-        printf("Debugging, titre fin de boucle : \n");
-        printf("x1 = %.3f \n",titreSuivant->x1);
-        printf("y1 = %.3f \n",titreSuivant->y1);
-        printf("x2 = %.3f \n",titreSuivant->x2);
-        printf("y2 = %.3f \n",titreSuivant->y2);
+        //printf("Debugging, titre fin de boucle : \n");
+        //printf("x1 = %.3f \n",titreSuivant->x1);
+        //printf("y1 = %.3f \n",titreSuivant->y1);
+        //printf("x2 = %.3f \n",titreSuivant->x2);
+        //printf("y2 = %.3f \n",titreSuivant->y2);
 
         compteur = compteur + 1;
 
     }
     
-    printf("Je suis ici... \n");
+    //printf("Je suis ici... \n");
 
     free(titre);
     free(AMel);

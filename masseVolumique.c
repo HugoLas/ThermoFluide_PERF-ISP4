@@ -2,6 +2,7 @@
 
 double trouveRhoLiq(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines, double grandM){
     double rho;
+    globales->alpha = trouveAlpha(globales);
     trouveZ(globales,TabBornesRacines,TabRacines);
     rho = grandM*((globales->P1)/(TabRacines->donnees[0]*8.314*globales->T1));
     return rho;
@@ -88,10 +89,13 @@ void menuDefautRho(varPR* globales, double grandM){
         printf("--> ");
         scanf("%d", &choixMenu);
     }
-
+    globales->Tr = globales->T1/globales->Tc;
+    globales->Pr = globales->P1/globales->Pc;
+    return;
 }
 
 double volumeMolaire(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRacines, int phase){
+    globales->alpha = trouveAlpha(globales);
     trouveZ(globales,TabBornesRacines,TabRacines);
     if (phase == 1)                         // 1 -> phase liquide 
     {
@@ -99,8 +103,8 @@ double volumeMolaire(varPR* globales, Tableau* TabBornesRacines, Tableau* TabRac
     }
     else if (TabRacines->taille == 1)       // taille == 1 + phase vapeur -> une seule racine, pas d'équilibre donc vapeur surchauffée. (ou liq sous refroidi mais on part du principe que l'utilisateur a bien choisi la phase)
     {
-        //printf("taille == 1 + phase vapeur -> une seule racine \n");
-        //printf("TabRacines->donnees[0] = %.4f \n", TabRacines->donnees[0]);
+        printf("taille == 1 + phase vapeur -> une seule racine \n");
+        printf("TabRacines->donnees[0] = %.4f \n", TabRacines->donnees[0]);
         return((8.314*globales->T1*TabRacines->donnees[0])/globales->P1);
     }
     else                                    // taille != 1 + phase vapeur -> 2 racines, il y a un équilibre liq vap. Dans ce cas, zvap est dans la seconde case. (la case n°1 car l'indexage démarre à 0)
@@ -135,8 +139,8 @@ double deltaV(varPR* globales1, Tableau* TabBornesRacines1, Tableau* TabRacines1
     }
 
     v1 = volumeMolaire(globales1,TabBornesRacines1,TabRacines1,choixPhase);
-    //printf("v1 = %.8f \n", v1);
+    printf("v1 = %.8f \n", v1);
     v2 = volumeMolaire(globales2,TabBornesRacines2,TabRacines2,choixPhase);
-    //printf("v2 = %.8f \n", v2);
+    printf("v2 = %.8f \n", v2);
     return(v2-v1);
 }
