@@ -83,5 +83,7 @@ void lectureAsciiArt(char *str);
 double integraleCp(double borneInf, double borneSup, double pasIntegration, double (*ptrFonction)(double, cpStruct*),cpStruct* cpCoeffs); // Utilise la méthode de Simpson (Très précise pour intégrer des polynomes, ici on s'en servira pour intégrer des capacités calo)
 Tableau* creerTableauInt(int taille, char* localisation);
 varPR* creerGlobales(char* localisation);
+antoineStruct* creerAntoine(char* localisation, void (*ptrFonction)(antoineStruct*));
+cpStruct* creerCpStruct(char* localisation);
 void defautsGlobalesEthane(varPR* globales,double T, double P, bool SI);
 void defautsGlobalesHeptane(varPR* globales, double T, double P, bool SI);

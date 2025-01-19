@@ -12,6 +12,7 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 #include "PR.h"
 #include "utilitaires.h"
 #include "antoine.h"
+#include "hVapEOS.h"
 
 double trouveACompose(double A1, double A2, double k12);
 BMelange* trouveBMelange(titresMelange* titre, varPR* globalesEspece1, varPR* globalesEspece2, char* localisation); // Localisation permet d'afficher l'emplacement de l'erreur sous forme de string en cas de probleme d'allocation memoire
@@ -21,5 +22,7 @@ void titresEnFonctionDeK(titresMelange *titre, double K1, double K2);
 void actualiserTitres(titresMelange *titre, titresMelange *titreSuivant);
 double ecartMoyenTitres(titresMelange *titre, titresMelange *titreSuivant);
 titresMelange* trouveTitres(varPR* globaleEspece1, varPR* globaleEspece2, double P, double T, double k12, antoineStruct* coeffsAntoine1, antoineStruct* coeffsAntoine2, double critere);
-
+double tiret(double titre1, double titre2, varPR* globales1, varPR* globales2, double k12, double AMel);
+double hMinusHStarMelange(double Z, double AMel, double BMel, double T, double titre1, double titre2, varPR* globales1, varPR* globales2, double k12);
+void enthalpieMelange(titresMelange* titres, varPR* globales1, varPR* globales2, double k12, cpStruct* cpCoeffs1, cpStruct* cpCoeffs2);
 

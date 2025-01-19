@@ -36,7 +36,7 @@ do
     printf("(7) La différence d'enthalpie entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
     printf("(8) La différence d'entropie entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
     printf("(9) La différence de volume molaire entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
-    printf("(10) La valeur des titres d'un mélange couple {T,P} donné \n");
+    printf("(10) La valeur des titres d'un mélange couple {T,P} donné, ainsi que les enthalpies de mélange. \n");
     printf("(0) Pour quitter\n");
     printf("\n");
 
@@ -274,11 +274,13 @@ do
             Tableau *TableauRacinesDS_1 = creerTableauInt(3,"Programme Principal -> cas n°8 -> TableauRacinesDS_1");
             Tableau *TableauRacinesDS_2 = creerTableauInt(3,"Programme Principal -> cas n°8 -> TableauRacinesDS_2");
 
-            cpStruct *cpCoeffsEntropie = (cpStruct*)malloc(sizeof(cpStruct)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et hVapEOS.c. La structure en question est définie dans utilitaires.h
+            cpStruct *cpCoeffsEntropie = creerCpStruct("allocation cpCoeffsEntropie cas n°8"); 
+            
+            /*(cpStruct*)malloc(sizeof(cpStruct)); // Je demande l'allocation dynamique d'une vecteur contenant toutes les variables globales nécessaires au fonctionnement de PR.c et hVapEOS.c. La structure en question est définie dans utilitaires.h
             if (cpCoeffsEntropie == NULL) {
             printf("Erreur d'allocation mémoire -> main, allocation cpCoeffsEntropie cas n°8.\n");
             return 0;
-            }
+            }*/
             cpCoeffsEntropie->a =5.409; 
             cpCoeffsEntropie->b =1.781*pow(10,-1);
             cpCoeffsEntropie->c =-6.938*pow(10,-5);
@@ -343,23 +345,37 @@ do
             
             titresMelange* titres;
 
-            antoineStruct *coefficientsAntoineMelEspece1 = (antoineStruct*)malloc(sizeof(antoineStruct));
-            if (coefficientsAntoineMelEspece1 == NULL) {
-            printf("Erreur d'allocation mémoire -> programme principal -> cas n°10 -> coefficientsAntoineMelEspece1.\n");
-            return 0;
-            }
+            //antoineStruct *coefficientsAntoineMelEspece1 = (antoineStruct*)malloc(sizeof(antoineStruct));
+            //if (coefficientsAntoineMelEspece1 == NULL) {
+            //printf("Erreur d'allocation mémoire -> programme principal -> cas n°10 -> coefficientsAntoineMelEspece1.\n");
+            //return 0;
+            //}
+            //menuDefautAntoine(coefficientsAntoineMelEspece1);
+            //printf("\n");
             printf("Choix coefficients pour formule d'Antoine espèce 1 : \n");
-            menuDefautAntoine(coefficientsAntoineMelEspece1);
-            printf("\n");
+            antoineStruct *coefficientsAntoineMelEspece1 = creerAntoine("programme principal -> cas n°10 -> coefficientsAntoineMelEspece1",menuDefautAntoine);
             
-            antoineStruct *coefficientsAntoineMelEspece2 = (antoineStruct*)malloc(sizeof(antoineStruct));
+            printf("Choix coefficients pour formule d'Antoine espèce 2 : \n");
+            antoineStruct *coefficientsAntoineMelEspece2 = creerAntoine("programme principal -> cas n°10 -> coefficientsAntoineMelEspece2.",menuDefautAntoine); /*(antoineStruct*)malloc(sizeof(antoineStruct));
             if (coefficientsAntoineMelEspece2 == NULL) {
             printf("Erreur d'allocation mémoire -> programme principal -> cas n°10 -> coefficientsAntoineMelEspece2.\n");
             return 0;
             }
-            printf("Choix coefficients pour formule d'Antoine espèce 2 : \n");
             menuDefautAntoine(coefficientsAntoineMelEspece2);
-            printf("\n");
+            printf("\n");*/
+            
+            // Ici je code en dur les coefficients pour ne pas alourdir encore les menus qui demandent déjà à être retravaillés
+            cpStruct *cpCoeffs1 = creerCpStruct("allocation cpCoeffs1 cas n°10"); 
+            cpCoeffs1->a =5.409; 
+            cpCoeffs1->b =1.781*pow(10,-1);
+            cpCoeffs1->c =-6.938*pow(10,-5);
+            cpCoeffs1->d =8.713*pow(10,-9);
+
+            cpStruct *cpCoeffs2 = creerCpStruct("allocation cpCoeffs2 cas n°10"); 
+            cpCoeffs2->a = -5.146; 
+            cpCoeffs2->b = 6.762*pow(10,-1);
+            cpCoeffs2->c = -3.651*pow(10,-4);
+            cpCoeffs2->d = 7.658*pow(10,-8);
 
             double *coefficientInteractionBinaire = (double*)malloc(sizeof(double));
             if (coefficientInteractionBinaire == NULL) {
@@ -398,6 +414,8 @@ do
             printf("y1 = %.3f \n",titres->y1);
             printf("x2 = %.3f \n",titres->x2);
             printf("y2 = %.3f \n",titres->y2);
+
+            enthalpieMelange(titres,globalesMelEspece1,globalesMelEspece2,*coefficientInteractionBinaire,cpCoeffs1,cpCoeffs2);
 
             free(globalesMelEspece1);
             free(globalesMelEspece2);

@@ -334,6 +334,26 @@ if (globales == NULL) {
 return globales;
 }
 
+antoineStruct* creerAntoine(char* localisation, void (*ptrFonction)(antoineStruct*)){ // obligé de faire appel de manière détournée à la fonction menuDefautAntoine(coeffs) car celle-ci est définie dans un fichier qui appelle utilitaires.h
+    antoineStruct* coefficientsAntoine = (antoineStruct*)malloc(sizeof(antoineStruct));
+    if (coefficientsAntoine == NULL) {
+    printf("Erreur d'allocation mémoire -> %s \n", localisation);
+    return 0;
+    }
+    ptrFonction(coefficientsAntoine);
+    printf("\n");
+    return coefficientsAntoine;
+}
+
+cpStruct* creerCpStruct(char* localisation){
+    cpStruct *cpCoeffs = (cpStruct*)malloc(sizeof(cpStruct)); 
+    if (cpCoeffs == NULL) {
+    printf("Erreur d'allocation mémoire -> %s \n");
+    return 0;
+    }
+    return cpCoeffs;
+}
+
 void defautsGlobalesEthane(varPR* globales, double T, double P, bool SI){
     globales->T1 = T;           
     globales->P1 = P;

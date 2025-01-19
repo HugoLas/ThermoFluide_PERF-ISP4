@@ -19,16 +19,16 @@ AMelange* trouveAMelange(titresMelange* titre, varPR* globalesEspece1, varPR* gl
     if (AMel == NULL) {
         printf("Erreur d'allocation mémoire -> %s \n"); // %s prend un pointeur vers char (un string donc)
     }
-    printf("globalesEspece1->Tr = %.3f \n",globalesEspece1->Tr);
-    printf("globalesEspece1->Pr = %.3f \n",globalesEspece1->Pr);
-    printf("globalesEspece2->Tr = %.3f \n",globalesEspece2->Tr);
-    printf("globalesEspece2->Pr = %.3f \n",globalesEspece2->Pr);
+    //printf("globalesEspece1->Tr = %.3f \n",globalesEspece1->Tr);
+    //printf("globalesEspece1->Pr = %.3f \n",globalesEspece1->Pr);
+    //printf("globalesEspece2->Tr = %.3f \n",globalesEspece2->Tr);
+    //printf("globalesEspece2->Pr = %.3f \n",globalesEspece2->Pr);
     double A1 = trouveA(globalesEspece1);
     
     //printf("globalesEspece1->alpha = %.3f \n",globalesEspece1->alpha);
-    printf("trouveA(globalesEspece1) = %.3f \n",trouveA(globalesEspece1));
+    // printf("trouveA(globalesEspece1) = %.3f \n",trouveA(globalesEspece1));
     double A2 = trouveA(globalesEspece2);
-    printf("trouveA(globalesEspece2) = %.3f \n",trouveA(globalesEspece2));
+    // printf("trouveA(globalesEspece2) = %.3f \n",trouveA(globalesEspece2));
     AMel->Aliq = pow(titre->x1,2)*A1+pow(titre->x2,2)*A2+2*titre->x1*titre->x2*trouveACompose(A1,A2,k12);
     AMel->Avap = pow(titre->y1,2)*A1+pow(titre->y2,2)*A2+2*titre->y1*titre->y2*trouveACompose(A1,A2,k12);
     return(AMel);
@@ -193,4 +193,66 @@ titresMelange* trouveTitres(varPR* globaleEspece1, varPR* globaleEspece2, double
     free(TabRacinesVap);
 
     return(titreSuivant);
+}
+
+double tiret(double titre1, double titre2, varPR* globales1, varPR* globales2, double k12, double AMel){
+    // Pour comprendre : 1+\frac{1}{A}\times\left[\underbrace{x_{1}m_{1}\sqrt{\frac{T_{R,1}}{\alpha_{1}}}\times\left(x_{1}A_{1}+x_{2}A_{12}\right)}_{A}+\underbrace{x_{2}m_{2}\sqrt{\frac{T_{R,2}}{\alpha_{2}}}\times\left(x_{1}A_{21}+x_{2}A_{2}\right)}_{B}\right]
+    // Explications page 138 du cours.
+    double m1 = 0.37464+(1.54226*globales1->acentric)-(0.26992*globales1->acentric*globales1->acentric);
+    double m2 = 0.37464+(1.54226*globales2->acentric)-(0.26992*globales2->acentric*globales2->acentric);
+
+    double P = titre1*m1*sqrt(globales1->Tr/globales1->alpha)*(titre1*trouveA(globales1)+titre2*trouveACompose(trouveA(globales1),trouveA(globales2),k12));
+    double Q = titre2*m2*sqrt(globales2->Tr/globales2->alpha)*(titre1*trouveACompose(trouveA(globales1),trouveA(globales2),k12)+titre2*trouveA(globales2));
+
+    return (1+(1/AMel)*(P+Q));
+}
+
+double hMinusHStarMelange(double Z, double AMel, double BMel, double T, double titre1, double titre2, varPR* globales1, varPR* globales2, double k12){
+    
+    return(8.314*T*((Z-1) - (AMel*sqrt(2)/(4*BMel))*tiret(titre1,titre2,globales1,globales2,k12,AMel)*log((Z + BMel*(1+sqrt(2))) / (Z + BMel*(1+sqrt(2))))));
+}
+
+void enthalpieMelange(titresMelange* titres, varPR* globales1, varPR* globales2, double k12, cpStruct* cpCoeffs1, cpStruct* cpCoeffs2){
+    
+    Tableau* TabBornesRacinesLiq = creerTableauInt(6,"melange.c -> trouveTitres -> allocation de 'TabBornesRacinesLiq'");
+    Tableau* TabRacinesLiq = creerTableauInt(3, "melange.c -> trouveTitres -> allocation de 'TabRacinesLiq'");
+    Tableau* TabBornesRacinesVap = creerTableauInt(6,"melange.c -> trouveTitres -> allocation de 'TabBornesRacinesVap'");
+    Tableau* TabRacinesVap = creerTableauInt(3, "melange.c -> trouveTitres -> allocation de 'TabRacinesVap'");
+
+    AMelange* AMel = trouveAMelange(titres,globales1,globales2,k12,"enthalpieMelange -> AMel");
+    BMelange* BMel = trouveBMelange(titres,globales1,globales2,"enthalpieMelange -> BMel");
+ 
+    trouveZMelange(AMel,BMel,TabBornesRacinesLiq,TabRacinesLiq,0);
+    double ZmelLiq = valeurMin(TabRacinesLiq);
+    trouveZMelange(AMel,BMel,TabBornesRacinesVap,TabRacinesVap,1);
+    double ZmelVap = valeurMax(TabRacinesVap);
+
+    double hMinusHStarLiq = hMinusHStarMelange(ZmelLiq,AMel->Aliq,BMel->Bliq,globales1->T1,titres->x1,titres->x2,globales1,globales2,k12); 
+    double hMinusHStarVap = hMinusHStarMelange(ZmelVap,AMel->Avap,BMel->Bvap,globales1->T1,titres->y1,titres->y2,globales1,globales2,k12); 
+    printf("\n");
+    printf("h moins h* phase liquide = %.3f \n", hMinusHStarLiq);
+    printf("h moins h* phase vapeur = %.3f \n", hMinusHStarVap);
+
+    double hStar1 = 0 + (-1)*integraleCp(globales1->T1,298.15,0.0003,fonctionCpVap,cpCoeffs1); // Je permute les bornes car la t° de réf imposée dans la consigne > t° du problème considéré (293K)
+    double hStar2 = 0 + (-1)*integraleCp(globales2->T1,298.15,0.0003,fonctionCpVap,cpCoeffs2);
+
+    printf("\n");
+    printf("h*1 = %.3f \n", hStar1);
+    printf("h*2 = %.3f \n", hStar2);
+
+
+    double hStarLiq = titres->x1*hStar1+titres->x2*hStar2;
+    double hStarVap = titres->y1*hStar1+titres->y2*hStar2;
+
+    printf("\n");
+    printf("h*Liq = %.3f \n", hStarLiq);
+    printf("h*Vap = %.3f \n", hStarVap);
+
+    double hMelangeLiq = hMinusHStarLiq + hStarLiq;
+    double hMelangeVap = hMinusHStarVap + hStarVap;
+    printf("\n");
+    printf("h mélange en phase liquide = %.3f \n", hMelangeLiq);
+    printf("h melange en phase vapeur = %.3f \n", hMelangeVap);
+
+    return;
 }
