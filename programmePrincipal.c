@@ -15,6 +15,7 @@ et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) *
 #include "masseVolumique.h"
 #include "entropie.h"
 #include "melange.h"
+#include "Poynting.h"
 
 
 int main(){
@@ -37,6 +38,7 @@ do
     printf("(8) La différence d'entropie entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
     printf("(9) La différence de volume molaire entre 2 couples {T,P} donnés. (Equation d'état, Peng-Robinson) \n");
     printf("(10) La valeur des titres d'un mélange couple {T,P} donné, ainsi que les enthalpies de mélange. \n");
+    printf("(11) La fugacité liquide à {P2;T1} sachant {P1;T1} \n");
     printf("(0) Pour quitter\n");
     printf("\n");
 
@@ -423,12 +425,65 @@ do
             free(coefficientsAntoineMelEspece1);
             free(coefficientsAntoineMelEspece2);
             free(coefficientInteractionBinaire);
+            free(cpCoeffs1);
+            free(cpCoeffs2);
 
             printf("\n");
             printf("Pour continuer, appuyez sur entrer...");
             getchar();
             getchar();
             break;
+
+        case 11:
+            Tableau *TableauBornesRacinesPy;
+            Tableau *TableauRacinesPy;
+            varPR* globalesPy = creerGlobales("programme principal -> cas n°11 -> globalesPy");
+            defautsGlobalesEthane(globalesPy,173,0.5271,false);
+            menuDefautValeursZ(globalesPy);
+            
+            double *P2 = (double*)malloc(sizeof(double));
+            if (P2==NULL){
+                printf("Erreur d'allocation mémoire -> main, allocation de P2 pour le cas n°11 \n");
+                return 0;
+            }
+            *P2 = 0; // initialisation
+
+            double *Zc = (double*)malloc(sizeof(double));
+            if (Zc==NULL){
+                printf("Erreur d'allocation mémoire -> main, allocation de Zc pour le cas n°11 \n");
+                return 0;
+            }
+            *Zc = 0; // initialisation 
+
+            TableauBornesRacinesPy = creerTableauInt(6,"Prog principal -> cas n°11, TableauBornesRacinesPy");
+            TableauRacinesPy = creerTableauInt(3,"Prog principal -> cas n°11, TableauRacinesPy");
+
+            printf("globalesPy->Pr = %.3f \n",globalesPy->Pr);
+            printf("globalesPy->Tr = %.3f \n",globalesPy->Tr);
+
+            trouveZ(globalesPy,TableauBornesRacinesPy,TableauRacinesPy);
+
+            menuPoynting(globalesPy,P2,Zc);
+            printf("Zc = %.3f \n", *Zc);
+            printf("P2 = %.3f \n", *P2);
+
+            printf("Zvap = %.3f \n", valeurMax(TableauRacinesPy));
+            printf("Fugacité en phase liquide = %.3f \n", fugaciteLiq(valeurMax(TableauRacinesPy),globalesPy,*P2,*Zc));
+            
+            free(TableauRacinesPy->donnees);
+            free(TableauRacinesPy);
+            free(TableauBornesRacinesPy->donnees);
+            free(TableauBornesRacinesPy);
+            free(P2);
+            free(Zc);
+            free(globalesPy);
+
+            printf("\n");
+            printf("Pour continuer, appuyez sur entrer...");
+            getchar();
+            getchar();
+            break;
+
         case 0:
             printf("\n");
             break;

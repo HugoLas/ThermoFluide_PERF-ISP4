@@ -1,0 +1,16 @@
+#pragma once // Permet de n'inclure qu'une fois les librairies (ignore les instructions include si déjà fait dans la fonction qui appelle cette librairie)
+
+//~~~~~~~~~~~~~~~~~~~~~~~~~ Appel des librairies ~~~~~~~~~~~~~~~~~~~~~~~~~
+
+/* Ces librairies donnent accès à des fonctions déjà programmées par des gens talentueux
+et nous évite de les reprogrammer (ce qui irait au delà de nos compétences) */
+
+#include <math.h>   // Permet d'effectuer des calculs
+#include <stdlib.h> // Permet l'allocation dynamic de mémoire
+#include <stdio.h>
+#include "utilitaires.h"
+
+double vRackett(varPR* globales, double Zc);
+double poyntingFactor(varPR* globales, double Zc, double P2);
+double fugaciteLiq(double ZVap, varPR* globales, double P2, double Zc);
+void menuPoynting(varPR* globales, double* P2, double* Zc);

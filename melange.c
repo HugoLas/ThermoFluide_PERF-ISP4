@@ -224,8 +224,10 @@ void enthalpieMelange(titresMelange* titres, varPR* globales1, varPR* globales2,
  
     trouveZMelange(AMel,BMel,TabBornesRacinesLiq,TabRacinesLiq,0);
     double ZmelLiq = valeurMin(TabRacinesLiq);
+    printf("ZmelLiq = %.3f \n",ZmelLiq);
     trouveZMelange(AMel,BMel,TabBornesRacinesVap,TabRacinesVap,1);
     double ZmelVap = valeurMax(TabRacinesVap);
+    printf("ZmelVap = %.3f \n",ZmelVap);
 
     double hMinusHStarLiq = hMinusHStarMelange(ZmelLiq,AMel->Aliq,BMel->Bliq,globales1->T1,titres->x1,titres->x2,globales1,globales2,k12); 
     double hMinusHStarVap = hMinusHStarMelange(ZmelVap,AMel->Avap,BMel->Bvap,globales1->T1,titres->y1,titres->y2,globales1,globales2,k12); 
