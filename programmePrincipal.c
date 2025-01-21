@@ -464,8 +464,8 @@ do
             trouveZ(globalesPy,TableauBornesRacinesPy,TableauRacinesPy);
 
             menuPoynting(globalesPy,P2,Zc);
-            printf("Zc = %.3f \n", *Zc);
-            printf("P2 = %.3f \n", *P2);
+            //printf("Zc = %.3f \n", *Zc);
+            //printf("P2 = %.3f \n", *P2);
 
             printf("Zvap = %.3f \n", valeurMax(TableauRacinesPy));
             printf("Fugacité en phase liquide = %.3f \n", fugaciteLiq(valeurMax(TableauRacinesPy),globalesPy,*P2,*Zc));
