@@ -156,6 +156,9 @@ double deltaHSinglePhase(cpStruct* cpCoeffs, varPR* globales1, varPR* globales2,
             }
             else if (TabRacines2->taille==1)                // Seul le couple {P,T} de fin génère une vapeur surchauffée. Je prends donc la deuxième case du tableau 1 mais la première case du tableau 2.
             {
+                //printf("hMinusHStar(globales1,TabRacines1->donnees[1]) = %.3f \n", hMinusHStar(globales1,TabRacines1->donnees[1]));
+                //printf("hMinusHStar(globales2,TabRacines2->donnees[0]) = %.3f \n", hMinusHStar(globales2,TabRacines2->donnees[0]));
+
                 deltaH = hMinusHStar(globales2,TabRacines2->donnees[0]) - hMinusHStar(globales1,TabRacines1->donnees[1]) + (integraleCp(0,globales2->T1,0.0003,fonctionCpVap,cpCoeffs) - integraleCp(0,globales1->T1,0.0003,fonctionCpVap,cpCoeffs));
             }
             else                                                  // Les deux conditions données génèrent des équilibres. TableauRacine1&2 ont toujours 2 cases et z_vap est toujours dans la seconde.

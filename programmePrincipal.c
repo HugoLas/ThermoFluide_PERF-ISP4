@@ -386,13 +386,13 @@ do
             }
             
             // TODO : sécuriser la saisie en mettant une boucle en cas de mauvaise saisie
-            printf("Choix du coefficient d'interaction binaire : \n");
+            printf("Choix du coefficient d'interaction binaire (0.0033 pour ethane-heptane avec PR) : \n");
             printf("--> ");
             scanf("%lf", coefficientInteractionBinaire);
 
             printf("Choix de l'espèce n°1... Les paramètres {T,P} choisis ici seront ceux utilisés pour le mélange. \n");
             chargerProfilGlobales(globalesMelEspece1);
-            globalesMelEspece1->alpha = trouveAlpha(globalesMelEspece1); // Malheureusement impossible de calculer alpha dans chargerProfilGlobales car celui-ci est dans utilitaires, et utilitaire ne peut inclure PR.h.
+            globalesMelEspece1->alpha = trouveAlpha(globalesMelEspece1); // Malheureusement impossible de calculer alpha dans chargerProfilGlobales car celui-ci est dans utilitaires, et utilitaire ne peut inclure PR.h. (en fait si, avec un ptr vers fonction en arg)
             printf("\n");
 
             

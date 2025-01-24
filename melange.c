@@ -9,6 +9,8 @@ BMelange* trouveBMelange(titresMelange* titre, varPR* globalesEspece1, varPR* gl
     if (BMel == NULL) {
         printf("Erreur d'allocation mémoire -> %s \n", localisation); // %s prend un pointeur vers char (un string donc)
     }
+    //printf("trouveB(globalesEspece1) = %.3f \n", trouveB(globalesEspece1));
+    //printf("trouveB(globalesEspece2) = %.3f \n", trouveB(globalesEspece2));
     BMel->Bliq=titre->x1*trouveB(globalesEspece1)+titre->x2*trouveB(globalesEspece2);
     BMel->Bvap=titre->y1*trouveB(globalesEspece1)+titre->y2*trouveB(globalesEspece2);
     return(BMel);
@@ -26,9 +28,12 @@ AMelange* trouveAMelange(titresMelange* titre, varPR* globalesEspece1, varPR* gl
     double A1 = trouveA(globalesEspece1);
     
     //printf("globalesEspece1->alpha = %.3f \n",globalesEspece1->alpha);
-    // printf("trouveA(globalesEspece1) = %.3f \n",trouveA(globalesEspece1));
+    //printf("trouveA(globalesEspece1) = %.3f \n",trouveA(globalesEspece1));
     double A2 = trouveA(globalesEspece2);
-    // printf("trouveA(globalesEspece2) = %.3f \n",trouveA(globalesEspece2));
+    //printf("globalesEspece2->alpha = %.3f \n",globalesEspece2->alpha);
+
+    //printf("trouveA(globalesEspece2) = %.3f \n",trouveA(globalesEspece2));
+    //printf("trouveACompose(A1,A2,k12) = %.3f \n",trouveACompose(A1,A2,k12));
     AMel->Aliq = pow(titre->x1,2)*A1+pow(titre->x2,2)*A2+2*titre->x1*titre->x2*trouveACompose(A1,A2,k12);
     AMel->Avap = pow(titre->y1,2)*A1+pow(titre->y2,2)*A2+2*titre->y1*titre->y2*trouveACompose(A1,A2,k12);
     return(AMel);
@@ -82,6 +87,7 @@ double ecartMoyenTitres(titresMelange *titre, titresMelange *titreSuivant){
     double ecartX2 = fabs(titreSuivant->x2-titre->x2);
     double ecartY1 = fabs(titreSuivant->y1-titre->y1);
     double ecartY2 = fabs(titreSuivant->y2-titre->y2);
+    //return(100*(ecartX1+ecartY1)/2);
     return(100*(ecartX1+ecartX2+ecartY1+ecartY2)/4);
 }
 
@@ -106,26 +112,11 @@ titresMelange* trouveTitres(varPR* globaleEspece1, varPR* globaleEspece2, double
     Tableau* TabRacinesVap = creerTableauInt(3, "melange.c -> trouveTitres -> allocation de 'TabRacinesVap'");
 
 
-    K1 = antoineFormula(coeffsAntoine1, T);
-    K2 = antoineFormula(coeffsAntoine2, T);
-    
-    //K1 = 1.899;
-    //K2 = 0.0373;
+    K1 = antoineFormula(coeffsAntoine1, T)/globaleEspece1->P1;
+    //printf("K1 init = %.3f \n", K1);
+    K2 = antoineFormula(coeffsAntoine2, T)/globaleEspece1->P1;
+    //printf("K2 init = %.3f \n", K2);
 
-    //K1=2;
-    //K2=0.01;
-
-    //K2 = 1.7;
-    //K1 = 0.6;
-
-    //K1 = 6.10;
-    //K2 = 0.00759;
-
-
-    //titre->x1 = 0;
-    //titre->x2 = 0;
-    //titre->y1 = 0;
-    //titre->y2 = 0;
     memset(titre, 0, sizeof(titresMelange)); // Initialise à 0 tous les titres pour que la condition d'entrée dans la boucle soit vraie.
     titresEnFonctionDeK(titreSuivant,K1,K2);
     //printf("Debugging, premiers titres : \n");
@@ -202,8 +193,9 @@ double tiret(double titre1, double titre2, varPR* globales1, varPR* globales2, d
     double m2 = 0.37464+(1.54226*globales2->acentric)-(0.26992*globales2->acentric*globales2->acentric);
 
     double P = titre1*m1*sqrt(globales1->Tr/globales1->alpha)*(titre1*trouveA(globales1)+titre2*trouveACompose(trouveA(globales1),trouveA(globales2),k12));
+    //printf("P =%.3f \n",P);
     double Q = titre2*m2*sqrt(globales2->Tr/globales2->alpha)*(titre1*trouveACompose(trouveA(globales1),trouveA(globales2),k12)+titre2*trouveA(globales2));
-
+    //printf("Q =%.3f \n",Q);
     return (1+(1/AMel)*(P+Q));
 }
 
@@ -224,6 +216,7 @@ void enthalpieMelange(titresMelange* titres, varPR* globales1, varPR* globales2,
  
     trouveZMelange(AMel,BMel,TabBornesRacinesLiq,TabRacinesLiq,0);
     double ZmelLiq = valeurMin(TabRacinesLiq);
+    printf("\n");
     printf("ZmelLiq = %.3f \n",ZmelLiq);
     trouveZMelange(AMel,BMel,TabBornesRacinesVap,TabRacinesVap,1);
     double ZmelVap = valeurMax(TabRacinesVap);

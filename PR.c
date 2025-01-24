@@ -104,6 +104,7 @@ double trouveAlpha(varPR* globales){
     m = 0.37464+(1.54226*globales->acentric)-(0.26992*globales->acentric*globales->acentric);
     racineAlpha = 1+m*(1-sqrt(globales->Tr));
     alpha = racineAlpha*racineAlpha;
+    //printf("globales->Tc = %.3f \n", globales->Tc);
     //printf("m = %.4f \n",m);
     //printf("alpha = %.4f \n",alpha);
     return alpha;
